@@ -14,7 +14,7 @@
 - [x] T12: Gießkanne bedienen per Klick auf Pflanze, Buttons für Undo und Neues Spiel
 - [x] T13: Persistenz von Spielstand und Highscore (localStorage), mit Tests
 - [x] T14: Sieg- und Game-Over-Overlay
-- [ ] T15: Responsive Layout (ab 360px)
+- [x] T15: Responsive Layout (ab 360px)
 - [ ] T16 (optional): Playwright-Tests (Spiel starten und Zug machen; Reload erhält Spielstand). Falls der Browser-Download in dieser Umgebung nicht klappt: in `DECISIONS.md` vermerken und überspringen.
 - [ ] T17: README.md (Start, Tests, Spielregeln)
 - [ ] T18: Deployment per GitHub Pages einrichten (GitHub-Actions-Workflow, Vite `base` auf den Repo-Namen setzen, Build läuft in CI), Link-Hinweis in README

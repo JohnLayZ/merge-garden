@@ -82,3 +82,12 @@ body {
 
 .overlay[data-status="won"] { background: rgba(240, 250, 226, 0.88); }
 .overlay[data-status="lost"] { background: rgba(250, 236, 232, 0.9); }
+
+@media (max-width: 420px) {
+  #app { padding: 10px; gap: 10px; }
+  .title { font-size: 1.15rem; }
+  .box { min-width: 64px; padding: 4px 8px; }
+  .btn { padding: 10px 10px; font-size: 0.9rem; flex: 1; }
+  .hint { font-size: 0.78rem; }
+  .overlay-text { font-size: 1.6rem; }
+}
