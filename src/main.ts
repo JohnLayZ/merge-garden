@@ -3,6 +3,7 @@ import { moveBoard } from './game/board';
 import { applyMove, newGame, undo, useWateringCan } from './game/state';
 import type { TileMove } from './game/board';
 import type { Direction, GameState } from './game/types';
+import { loadGame, saveGame } from './storage';
 import { bindInput } from './ui/input';
 import { createView } from './ui/view';
 
@@ -10,13 +11,15 @@ const root = document.getElementById('app');
 if (!root) throw new Error('#app missing');
 const view = createView(root);
 
-let state: GameState = newGame(Date.now() >>> 0);
-let best = 0;
+const saved = loadGame(localStorage);
+let state: GameState = saved?.state ?? newGame(Date.now() >>> 0);
+let best = saved?.best ?? 0;
 
 function update(next: GameState, moves?: TileMove[]): void {
   state = next;
   best = Math.max(best, state.score);
   view.render(state, best, moves);
+  saveGame(localStorage, state, best);
 }
 
 function move(dir: Direction): void {
