@@ -1,6 +1,6 @@
 import { moveBoard } from './board';
 import { spawnSeeds } from './spawn';
-import { MAX_LEVEL, SIZE, type Board, type Direction, type GameState, type Snapshot, type Status } from './types';
+import { MAX_CANS, MAX_LEVEL, MERGES_PER_CAN, SIZE, type Board, type Direction, type GameState, type Snapshot, type Status } from './types';
 
 export function newGame(seed: number): GameState {
   const empty: Board = new Array(SIZE * SIZE).fill(0);
@@ -36,6 +36,12 @@ function snapshot(s: GameState): Snapshot {
   return { board: board.slice(), score, cans, mergeCount, status, moves, rng };
 }
 
+/** One can per MERGES_PER_CAN merges, capped at MAX_CANS (extra cans are lost). */
+export function earnCans(cans: number, before: number, after: number): number {
+  const gained = Math.floor(after / MERGES_PER_CAN) - Math.floor(before / MERGES_PER_CAN);
+  return Math.min(MAX_CANS, cans + gained);
+}
+
 /** Apply a move. Invalid moves (nothing changes) return the very same state object. */
 export function applyMove(state: GameState, dir: Direction): GameState {
   if (state.status === 'lost') return state;
@@ -47,11 +53,24 @@ export function applyMove(state: GameState, dir: Direction): GameState {
     board: spawned.board,
     score: state.score + res.score,
     mergeCount: state.mergeCount + res.merges,
+    cans: earnCans(state.cans, state.mergeCount, state.mergeCount + res.merges),
     moves: state.moves + 1,
     rng: spawned.rng,
     prev: snapshot(state),
   };
   // a freshly created level-7 plant counts as a win even if a spawn follows
   next.status = computeStatus({ ...next, status: res.board.includes(MAX_LEVEL) ? 'won' : state.status });
+  return next;
+}
+
+/** Upgrade the plant at `index` by one level using a can. Costs no move. No-op (same state) if impossible. */
+export function useWateringCan(state: GameState, index: number): GameState {
+  if (state.status === 'lost' || state.cans <= 0) return state;
+  const level = state.board[index];
+  if (!level || level >= MAX_LEVEL) return state;
+  const board = state.board.slice();
+  board[index] = level + 1;
+  const next: GameState = { ...state, board, cans: state.cans - 1, prev: snapshot(state) };
+  next.status = computeStatus(next);
   return next;
 }

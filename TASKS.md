@@ -6,7 +6,7 @@
 - [x] T4: Bewegen in 4 Richtungen auf dem 4x4-Feld, ungültige Züge erkennen
 - [x] T5: Seeded RNG und Spawn von 1–2 Samen nach gültigem Zug
 - [x] T6: Punkte, Sieg- und Niederlagen-Erkennung
-- [ ] T7: Gießkannen-Logik (Gewinn alle 10 Verschmelzungen, max. 3, Aufwerten)
+- [x] T7: Gießkannen-Logik (Gewinn alle 10 Verschmelzungen, max. 3, Aufwerten)
 - [ ] T8: Undo (1 Schritt) inkl. Tests
 - [ ] T9: Rendering des Feldes mit Emojis, Punktestand, Gießkannen-Anzeige
 - [ ] T10: Steuerung per Pfeiltasten, WASD und Touch-Wischen
