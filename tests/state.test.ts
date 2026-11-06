@@ -68,6 +68,13 @@ describe('status', () => {
     expect(n.board.every((v) => v > 0)).toBe(true);
     expect(n.status).toBe('lost');
   });
+  it('rejects undo (and watering) after game over', () => {
+    const s = withBoard([[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [0, 2, 1, 2]]);
+    const n = applyMove(s, 'left');
+    expect(n.status).toBe('lost');
+    expect(n.prev).not.toBeNull();
+    expect(undo(n)).toBe(n);
+  });
   it('does not accept moves once lost', () => {
     const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];
     const s = withBoard(rows, { status: 'lost' });

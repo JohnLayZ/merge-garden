@@ -126,7 +126,7 @@ export function createView(root: HTMLElement): View {
     bestVal.textContent = String(best);
     canLabel.textContent = `${state.cans}/${MAX_CANS}`;
     canBtn.disabled = state.cans === 0 || state.status !== 'playing';
-    undoBtn.disabled = state.prev === null || state.status === 'won';
+    undoBtn.disabled = state.prev === null || state.status !== 'playing';
     state.board.forEach((level, i) => {
       const t = tiles[i];
       if (level === 0) {

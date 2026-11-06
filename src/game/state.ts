@@ -25,7 +25,7 @@ export function isBlocked(board: Board): boolean {
 }
 
 export function computeStatus(s: Pick<Snapshot, 'board' | 'cans' | 'status'>): Status {
-  // The first Ancient Tree ends the game: 'won' is final (no moves, cans or undo afterwards).
+  // The first Ancient Tree ends the game: 'won' is final (no moves, cans or undo afterwards); 'lost' also blocks undo.
   if (s.status === 'won' || s.board.includes(MAX_LEVEL)) return 'won';
   const canWater = s.cans > 0 && s.board.some((v) => v > 0 && v < MAX_LEVEL);
   return isBlocked(s.board) && !canWater ? 'lost' : 'playing';
@@ -75,8 +75,8 @@ export function useWateringCan(state: GameState, index: number): GameState {
   return next;
 }
 
-/** Revert the last move or watering (not after a win). Only one step is kept; no-op (same state) if nothing to undo. */
+/** Revert the last move or watering (not after the game has ended: win or game over). Only one step is kept; no-op (same state) if nothing to undo. */
 export function undo(state: GameState): GameState {
-  if (!state.prev || state.status === 'won') return state;
+  if (!state.prev || state.status !== 'playing') return state;
   return { ...state, ...state.prev, board: state.prev.board.slice(), prev: null };
 }

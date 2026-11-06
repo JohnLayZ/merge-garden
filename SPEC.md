@@ -23,7 +23,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - F2: Steuerung per Pfeiltasten, WASD und Touch-Wischen
 - F3: Rendering mit Emojis je Stufe, einfache Animationen (Gleiten, Verschmelz-Pop)
 - F4: Punktestand und Highscore (localStorage)
-- F5: Undo (genau 1 Schritt zurück)
+- F5: Undo (genau 1 Schritt zurück); nach Sieg und nach Game Over nicht mehr möglich (Button deaktiviert), auch nicht nach Reload
 - F6: Gießkanne inkl. Anzeige und Auswahl einer Pflanze per Klick
 - F7: Neues Spiel, Spielstand bleibt nach Seiten-Reload erhalten
 - F8: Sieg- und Game-Over-Overlay: liegt über allem (inkl. Spielfeld), dunkelt das Feld ab, zeigt Text ("You win!" / "Game over"), Punktestand, Highscore und ausschließlich den Button "New Game"; bedienbar (Playwright-Test prüft das)
