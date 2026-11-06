@@ -26,7 +26,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - F5: Undo (genau 1 Schritt zurück)
 - F6: Gießkanne inkl. Anzeige und Auswahl einer Pflanze per Klick
 - F7: Neues Spiel, Spielstand bleibt nach Seiten-Reload erhalten
-- F8: Sieg- und Game-Over-Overlay
+- F8: Sieg- und Game-Over-Overlay: liegt über allem (inkl. Spielfeld), dunkelt das Feld ab, zeigt Text ("You win!" / "Game over"), Punktestand, Highscore und ausschließlich den Button "New Game"; bedienbar (Playwright-Test prüft das)
 - F9: Responsive (Handy-Breite ab 360px nutzbar)
 - F10: README mit Start- und Testanleitung
 

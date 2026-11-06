@@ -13,3 +13,4 @@
 ## Änderungsrunde 2
 - Animationen (Gleiten, Verschmelz-Pop, Spawn) laufen immer. Die `prefers-reduced-motion`-Abfrage wurde entfernt und darf nicht wieder eingebaut werden (Vorgabe des Auftraggebers, steht auch in SPEC.md).
 - Sieg beendet das Spiel endgültig (Status `won` ist final): `applyMove`, `useWateringCan` und `undo` geben nach einem Sieg denselben Zustand zurück. Der "Keep playing"-Button entfällt. Undo bleibt nach Game Over wie bisher möglich (nur der Sieg sperrt es).
+- Overlay-Fehler: Das Overlay lag optisch/klickbar nicht zuverlässig über dem Feld. Jetzt `z-index: 10` am Overlay, Board mit eigenem Stacking-Kontext (`z-index: 0`), abdunkelnder Hintergrund. Das Overlay zeigt Score und Best; `.overlay .btn` ist von der mobilen `flex: 1`-Regel ausgenommen. Playwright prüft per `elementFromPoint` und echtem Klick (ohne `force`).

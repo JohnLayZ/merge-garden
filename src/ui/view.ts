@@ -58,7 +58,8 @@ export function createView(root: HTMLElement): View {
   overlayEl.setAttribute('aria-live', 'polite');
   const overlayText = el('p', 'overlay-text');
   const overlayBtn = el('button', 'btn primary', 'New Game');
-  overlayEl.append(overlayText, overlayBtn);
+  const overlayScore = el('p', 'overlay-stats');
+  overlayEl.append(overlayText, overlayScore, overlayBtn);
   const boardWrap = el('div', 'board-wrap');
   boardWrap.append(boardEl, overlayEl);
 
@@ -146,6 +147,7 @@ export function createView(root: HTMLElement): View {
     });
     overlayEl.classList.toggle('hidden', state.status === 'playing');
     overlayText.textContent = state.status === 'lost' ? 'Game over' : 'You win!';
+    overlayScore.textContent = `Score: ${state.score} · Best: ${best}`;
     overlayEl.dataset.status = state.status;
   }
 
