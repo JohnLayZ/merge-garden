@@ -18,6 +18,6 @@
 - [x] T16 (optional): Playwright-Tests (Spiel starten und Zug machen; Reload erhält Spielstand). Falls der Browser-Download in dieser Umgebung nicht klappt: in `DECISIONS.md` vermerken und überspringen.
 - [x] T17: README.md (Start, Tests, Spielregeln)
 - [x] T18: Deployment per GitHub Pages einrichten (GitHub-Actions-Workflow, Vite `base` auf den Repo-Namen setzen, Build läuft in CI), Link-Hinweis in README
-- [ ] T19: Abschlussprüfung: lint, Tests und Build grün, `STATUS.md` aktualisieren, `ALL DONE` eintragen
+- [x] T19: Abschlussprüfung: lint, Tests und Build grün, `STATUS.md` aktualisieren, `ALL DONE` eintragen
 
 ## Ideen (nicht umsetzen, nur sammeln)
