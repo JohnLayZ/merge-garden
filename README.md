@@ -32,6 +32,8 @@ For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwri
 - **Watering Can:** every 10 merges you earn one can (max 3). Press *Watering Can*, then click a plant to grow it one stage — it costs no move. Ancient Trees can't be watered (the can is kept).
 - Score: merging into stage *n* gives 2ⁿ points.
 - You win when the first Ancient Tree appears and the game ends — no more moves, cans or undo (also when the tree is grown with the Watering Can). You lose when the board is full, nothing can merge and no can can help.
+- The header shows the play time (m:ss / h:mm:ss). It starts with your first valid move, only counts while the page is visible, stops at win/game over (the overlay shows the final time) and continues after a reload.
+- Soft sounds (Web Audio, no files): merging plays a pentatonic note that rises with the plant stage, plus short sounds for the Watering Can, a win and game over. Use the speaker button in the header to mute; the choice is remembered. Audio starts after your first click/key press.
 - *Undo* reverts exactly one step (not after a win or game over). Your game and best score are saved in `localStorage` and survive a reload.
 
 ## Project layout
@@ -39,6 +41,7 @@ For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwri
 - `src/game/` – pure game logic (no DOM, randomness only through a seeded RNG), same seed + same moves = same game
 - `src/ui/` – rendering, input handling, animations
 - `src/assets/` – plant SVGs; `dev/plants.html` – dev-only preview of all levels (open via `npm run dev` at `/dev/plants.html`, not part of the build)
+- `src/audio/` – Web Audio sounds (kept out of the game logic)
 - `src/storage.ts` – save/load with validation
 - `tests/` – vitest unit tests, `e2e/` – Playwright tests
 - `SPEC.md`, `TASKS.md`, `DECISIONS.md`, `STATUS.md` – specification and project notes

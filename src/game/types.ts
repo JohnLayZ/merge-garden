@@ -20,6 +20,8 @@ export interface Snapshot {
 
 export interface GameState extends Snapshot {
   seed: number;
+  /** Accumulated active play time in ms (see timer.ts); frozen once the game has ended. */
+  playMs: number;
   /** State before the last action (for 1-step undo), or null. */
   prev: Snapshot | null;
 }

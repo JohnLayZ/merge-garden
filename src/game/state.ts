@@ -15,6 +15,7 @@ export function newGame(seed: number): GameState {
     moves: 0,
     rng: second.rng,
     seed,
+    playMs: 0,
     prev: null,
   };
 }

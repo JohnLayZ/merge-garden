@@ -17,6 +17,13 @@ ALL DONE
 - Undo nach Game Over gesperrt (Logik, Button, auch nach Reload), Tests und Doku angepasst.
 - Stand: lint, 61 Unit-Tests, Build und 3 e2e-Tests grün.
 
+## Änderungsrunde 4 / Paket 3 (fertig)
+- Spielzeit im Kopfbereich (m:ss / h:mm:ss): nur aktive Zeit, Start mit dem ersten gültigen Zug, Stopp bei Sieg/Niederlage, mit dem Spielstand gespeichert (`playMs`), Reload läuft weiter, New Game setzt zurück. Reine Logik in `src/game/timer.ts`, Unit-Tests für Pause, Reload, eingefrorene Zeit.
+- Sieg-/Game-Over-Overlay zeigen die eingefrorene Spielzeit (auch nach Reload).
+- Sounds per Web Audio (`src/audio/sound.ts`): pentatonischer Ton je Pflanzenstufe, Gießkanne, Sieg-Jingle, sanftes Game Over, kein Bewegungsgeräusch; Mute-Schalter im Header (localStorage). SPEC.md angepasst ("kein Sound" entfällt).
+- CLAUDE.md: Regeln für Auftragsdokumentation (`docs/auftraege/`) und Release-Ablauf (PR, Merge, Deploy-Prüfung).
+- Stand: lint, 80 Unit-Tests, Build und 6 e2e-Tests grün.
+
 ## Offen
 - Nichts im Backlog.
 
