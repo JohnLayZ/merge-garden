@@ -7,8 +7,8 @@
   --btn-hover: #ebe2c4;
   --accent: #8fc7a0;
   --gap: 2%;
-  --tile: 24.5%;
-  --step: 26.5%;
+  --tile: 23.5%;
+  --step: 25.5%;
   --l1: #f1e4d3; --l2: #e3f3c9; --l3: #cdeccb; --l4: #c8e6e0;
   --l5: #f9d6e2; --l6: #d8eab6; --l7: #b9dfb0;
 }
@@ -30,7 +30,7 @@ body {
 .board-wrap { position: relative; width: 100%; }
 .board {
   position: relative; width: 100%; aspect-ratio: 1; background: var(--board);
-  border-radius: 18px; padding: 2.5%; container-type: inline-size; touch-action: none; user-select: none;
+  border-radius: 18px; container-type: inline-size; touch-action: none; user-select: none;
 }
 .layer { position: absolute; inset: 2.5%; }
 .cell, .tile {
