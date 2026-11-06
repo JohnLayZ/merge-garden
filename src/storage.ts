@@ -44,7 +44,9 @@ export function loadGame(kv: KV): Saved | null {
     const prev = (st as unknown as { prev: unknown }).prev;
     if (prev !== null && !validSnapshot(prev)) return null;
     const best = typeof data.best === 'number' && Number.isFinite(data.best) ? data.best : 0;
-    return { state: st as unknown as GameState, best: Math.max(best, (st as unknown as GameState).score) };
+    const ms = (st as unknown as { playMs?: unknown }).playMs;
+    const playMs = typeof ms === 'number' && Number.isFinite(ms) && ms > 0 ? ms : 0;
+    return { state: { ...(st as unknown as GameState), playMs }, best: Math.max(best, (st as unknown as GameState).score) };
   } catch {
     return null;
   }

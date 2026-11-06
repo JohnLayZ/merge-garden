@@ -4,6 +4,7 @@ import { applyMove, newGame, undo, useWateringCan } from './game/state';
 import type { TileMove } from './game/board';
 import type { Direction, GameState } from './game/types';
 import { loadGame, saveGame } from './storage';
+import { elapsedAt, idleTimer, pauseTimer, resumeTimer, shouldRun, type TimerState } from './game/timer';
 import { bindInput } from './ui/input';
 import { createView } from './ui/view';
 
@@ -15,12 +16,43 @@ const saved = loadGame(localStorage);
 let state: GameState = saved?.state ?? newGame(Date.now() >>> 0);
 let best = saved?.best ?? 0;
 
-function update(next: GameState, moves?: TileMove[]): void {
+// Play time: only active time is summed up and saved with the game (never a difference between page loads).
+const now = () => performance.now();
+let timer: TimerState = idleTimer(state.playMs);
+const visible = () => document.visibilityState !== 'hidden';
+
+/** Start/stop the timer to match the game state and visibility; stores the sum in the state. */
+function syncTimer(): void {
+  const t = now();
+  timer = shouldRun(state, visible()) ? resumeTimer(timer, t) : pauseTimer(timer, t);
+  state = { ...state, playMs: Math.floor(elapsedAt(timer, t)) };
+  view.setTime(state.playMs);
+}
+
+function update(next: GameState, moves?: TileMove[], resetTimer = false): void {
   state = next;
+  if (resetTimer) timer = idleTimer(0);
   best = Math.max(best, state.score);
+  syncTimer();
   view.render(state, best, moves);
   saveGame(localStorage, state, best);
 }
+
+setInterval(() => {
+  if (timer.runningSince === null) return;
+  const t = now();
+  state = { ...state, playMs: Math.floor(elapsedAt(timer, t)) };
+  view.setTime(state.playMs);
+  if (Math.floor(state.playMs / 1000) % 5 === 0) saveGame(localStorage, state, best);
+}, 250);
+document.addEventListener('visibilitychange', () => {
+  syncTimer();
+  saveGame(localStorage, state, best);
+});
+window.addEventListener('pagehide', () => {
+  syncTimer();
+  saveGame(localStorage, state, best);
+});
 
 function move(dir: Direction): void {
   const next = applyMove(state, dir);
@@ -47,7 +79,7 @@ view.buttons.undo.addEventListener('click', () => {
   setWatering(false);
 });
 const restart = () => {
-  update(newGame(Date.now() >>> 0));
+  update(newGame(Date.now() >>> 0), undefined, true);
   setWatering(false);
 };
 view.buttons.newGame.addEventListener('click', restart);

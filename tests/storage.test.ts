@@ -58,3 +58,21 @@ describe('storage + game over', () => {
     expect(undo(loaded)).toBe(loaded);
   });
 });
+
+describe('storage play time', () => {
+  it('persists playMs with the game', () => {
+    const kv = fake();
+    const s = { ...applyMove(newGame(5), 'left'), playMs: 83_000 };
+    saveGame(kv, s, 10);
+    expect(loadGame(kv)?.state.playMs).toBe(83_000);
+  });
+  it('defaults to 0 for old saves without playMs or with invalid values', () => {
+    const kv = fake();
+    const s = newGame(5) as unknown as Record<string, unknown>;
+    delete s.playMs;
+    kv.setItem('merge-garden:v1', JSON.stringify({ state: s, best: 0 }));
+    expect(loadGame(kv)?.state.playMs).toBe(0);
+    kv.setItem('merge-garden:v1', JSON.stringify({ state: { ...s, playMs: -4 }, best: 0 }));
+    expect(loadGame(kv)?.state.playMs).toBe(0);
+  });
+});

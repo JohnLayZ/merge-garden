@@ -22,6 +22,7 @@ body {
 }
 #app { width: 100%; max-width: 520px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
 .header { display: flex; align-items: center; gap: 8px; }
+.box-value { font-variant-numeric: tabular-nums; }
 .title { margin: 0; font-size: 1.5rem; flex: 1; font-weight: 800; }
 .box { background: var(--board); border-radius: 12px; padding: 6px 12px; text-align: center; min-width: 76px; }
 .box-label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; }
@@ -84,7 +85,8 @@ body {
 @media (max-width: 420px) {
   #app { padding: 10px; gap: 10px; }
   .title { font-size: 1.15rem; }
-  .box { min-width: 64px; padding: 4px 8px; }
+  .box { min-width: 0; padding: 4px 8px; }
+  .header { gap: 6px; }
   .btn { padding: 10px 10px; font-size: 0.9rem; flex: 1; }
   .hint { font-size: 0.78rem; }
   .overlay-text { font-size: 1.6rem; }
