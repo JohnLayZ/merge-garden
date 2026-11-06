@@ -79,3 +79,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .tile, .tile.pop, .tile.spawn { transition: none; animation: none; }
 }
+
+.overlay[data-status="won"] { background: rgba(240, 250, 226, 0.88); }
+.overlay[data-status="lost"] { background: rgba(250, 236, 232, 0.9); }

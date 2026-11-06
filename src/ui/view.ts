@@ -54,6 +54,8 @@ export function createView(root: HTMLElement): View {
   boardEl.append(bg, tilesLayer);
 
   const overlayEl = el('div', 'overlay hidden');
+  overlayEl.setAttribute('role', 'dialog');
+  overlayEl.setAttribute('aria-live', 'polite');
   const overlayText = el('p', 'overlay-text');
   const overlayBtn = el('button', 'btn primary', 'New Game');
   const continueBtn = el('button', 'btn', 'Keep playing');
