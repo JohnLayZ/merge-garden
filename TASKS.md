@@ -8,7 +8,7 @@
 - [x] T6: Punkte, Sieg- und Niederlagen-Erkennung
 - [x] T7: Gießkannen-Logik (Gewinn alle 10 Verschmelzungen, max. 3, Aufwerten)
 - [x] T8: Undo (1 Schritt) inkl. Tests
-- [ ] T9: Rendering des Feldes mit Emojis, Punktestand, Gießkannen-Anzeige
+- [x] T9: Rendering des Feldes mit Emojis, Punktestand, Gießkannen-Anzeige
 - [ ] T10: Steuerung per Pfeiltasten, WASD und Touch-Wischen
 - [ ] T11: Animationen (Gleiten, Verschmelz-Pop), per CSS
 - [ ] T12: Gießkanne bedienen per Klick auf Pflanze, Buttons für Undo und Neues Spiel
