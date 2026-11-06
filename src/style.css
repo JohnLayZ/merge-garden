@@ -76,10 +76,6 @@ body {
 .tile.spawn { animation: appear 150ms ease-out 100ms backwards; }
 @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes appear { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@media (prefers-reduced-motion: reduce) {
-  .tile, .tile.pop, .tile.spawn { transition: none; animation: none; }
-}
-
 .overlay[data-status="won"] { background: rgba(240, 250, 226, 0.88); }
 .overlay[data-status="lost"] { background: rgba(250, 236, 232, 0.9); }
 

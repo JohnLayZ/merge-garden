@@ -9,3 +9,6 @@
 - A "double spawn" (2 seeds) happens with 10% probability, otherwise 1 seed.
 - Level 7 plants never merge with each other.
 - Game is "lost" only if the board is blocked AND no can can upgrade any plant.
+
+## Änderungsrunde 2
+- Animationen (Gleiten, Verschmelz-Pop, Spawn) laufen immer. Die `prefers-reduced-motion`-Abfrage wurde entfernt und darf nicht wieder eingebaut werden (Vorgabe des Auftraggebers, steht auch in SPEC.md).

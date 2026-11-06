@@ -42,6 +42,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 ## Design-Vorgaben
 - Grafik: Emojis je Pflanzenstufe (1 🌰, 2 🌱, 3 🌿, 4 🪴, 5 🌷, 6 🌳, 7 🌲), keine externen Bilddateien
 - Farben: helle Pastelltöne (Frühlingsstimmung), Hintergrund cremeweiß, Spielfeld in sanftem Hellgrün, Felder in leicht abgesetzten Pastellflächen; pro Pflanzenstufe ein eigener dezenter Pastellton; gute Lesbarkeit (ausreichender Kontrast bei Text)
+- Animationen laufen IMMER, unabhängig von `prefers-reduced-motion` oder System-/Browsereinstellungen; keine Abfrage dieser Einstellung im CSS/JS (bewusste Entscheidung, nicht wieder einbauen)
 - Gefühl: ruhig und entspannt; Tiles gleiten sanft (ca. 120–150 ms), Verschmelzen mit dezentem Pop (leichtes Skalieren), keine Partikel, kein Wackeln, kein Sound
 - Schrift: eine abgerundete, gut lesbare System- oder Web-Safe-Schrift
 - Sprache der Oberfläche: Englisch (Titel "Merge Garden", Buttons "New Game", "Undo", "Watering Can", Texte "You win!" / "Game over")
