@@ -74,3 +74,9 @@ export function useWateringCan(state: GameState, index: number): GameState {
   next.status = computeStatus(next);
   return next;
 }
+
+/** Revert the last move or watering. Only one step is kept; no-op (same state) if nothing to undo. */
+export function undo(state: GameState): GameState {
+  if (!state.prev) return state;
+  return { ...state, ...state.prev, board: state.prev.board.slice(), prev: null };
+}
