@@ -31,8 +31,8 @@ For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwri
 - If a move changed something, 1–2 new seeds appear. A move that changes nothing doesn't count.
 - **Watering Can:** every 10 merges you earn one can (max 3). Press *Watering Can*, then click a plant to grow it one stage — it costs no move. Ancient Trees can't be watered (the can is kept).
 - Score: merging into stage *n* gives 2ⁿ points.
-- You win when the first Ancient Tree appears (you may keep playing). You lose when the board is full, nothing can merge and no can can help.
-- *Undo* reverts exactly one step. Your game and best score are saved in `localStorage` and survive a reload.
+- You win when the first Ancient Tree appears and the game ends — no more moves, cans or undo (also when the tree is grown with the Watering Can). You lose when the board is full, nothing can merge and no can can help.
+- *Undo* reverts exactly one step (not after a win). Your game and best score are saved in `localStorage` and survive a reload.
 
 ## Project layout
 

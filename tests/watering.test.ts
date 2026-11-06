@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyMove, earnCans, newGame, useWateringCan } from '../src/game/state';
+import { applyMove, earnCans, newGame, undo, useWateringCan } from '../src/game/state';
 import type { GameState } from '../src/game/types';
 
 const withBoard = (rows: number[][], extra: Partial<GameState> = {}): GameState => ({
@@ -43,7 +43,15 @@ describe('useWateringCan', () => {
   });
   it('can create the ancient tree and win', () => {
     const s = withBoard([[6, 0, 0, 0], Z, Z, Z], { cans: 1 });
-    expect(useWateringCan(s, 0).status).toBe('won');
+    const n = useWateringCan(s, 0);
+    expect(n.status).toBe('won');
+    expect(n.board[0]).toBe(7);
+    // game is over: no further watering, moves or undo
+    const m = withBoard([[6, 3, 0, 0], Z, Z, Z], { cans: 2 });
+    const won = useWateringCan(m, 0);
+    expect(useWateringCan(won, 1)).toBe(won);
+    expect(applyMove(won, 'down')).toBe(won);
+    expect(undo(won)).toBe(won);
   });
   it('can rescue a blocked board by creating a merge', () => {
     const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];

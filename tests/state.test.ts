@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyMove, computeStatus, isBlocked, newGame } from '../src/game/state';
+import { applyMove, computeStatus, isBlocked, newGame, undo, useWateringCan } from '../src/game/state';
 import type { Direction, GameState } from '../src/game/types';
 
 const withBoard = (rows: number[][], extra: Partial<GameState> = {}): GameState => ({
@@ -39,14 +39,19 @@ describe('applyMove', () => {
 });
 
 describe('status', () => {
-  it('wins when level 7 is created and allows continuing', () => {
+  it('wins when level 7 is created and the game is then over', () => {
     const s = withBoard([[6, 6, 0, 0], Z, Z, Z]);
     const n = applyMove(s, 'left');
     expect(n.status).toBe('won');
     expect(n.score).toBe(128);
-    const m = applyMove(n, 'down');
-    expect(m).not.toBe(n);
-    expect(m.status).toBe('won');
+    for (const d of ['left', 'right', 'up', 'down'] as Direction[]) expect(applyMove(n, d)).toBe(n);
+  });
+  it('rejects watering and undo after a win', () => {
+    const n = applyMove(withBoard([[6, 6, 3, 0], Z, Z, Z], { cans: 2 }), 'left');
+    expect(n.status).toBe('won');
+    expect(n.prev).not.toBeNull();
+    expect(useWateringCan(n, 1)).toBe(n);
+    expect(undo(n)).toBe(n);
   });
   it('is lost on a full board without merges or cans', () => {
     const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];

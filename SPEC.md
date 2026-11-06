@@ -15,7 +15,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 4. Hat sich nach einem Zug etwas verändert, erscheinen 1–2 neue Samen (Stufe 1) auf zufälligen leeren Feldern. Bewegt sich nichts, ist der Zug ungültig und zählt nicht.
 5. **Gießkanne (eigene Regel):** Alle 10 Verschmelzungen gibt es 1 Gießkanne (max. 3). Mit einer Gießkanne kann der Spieler eine beliebige Pflanze direkt eine Stufe aufwerten (ohne Zug zu verbrauchen). Stufe 7 kann nicht aufgewertet werden.
 6. Punkte: Verschmelzung zur Stufe n gibt 2^n Punkte.
-7. Gewonnen: erster Uralter Baum (Stufe 7) entsteht. Danach darf weitergespielt werden.
+7. Gewonnen: Mit dem ersten Uralten Baum (Stufe 7) ist das Spiel gewonnen und beendet (auch wenn er durch die Gießkanne entsteht). Danach sind keine Züge, Gießkannen-Nutzung oder Undo mehr möglich; es gibt kein Weiterspielen. Der Highscore wird dennoch aktualisiert, und nach Reload bleibt der Gewonnen-Zustand samt Overlay erhalten.
 8. Verloren: Feld voll und keine Verschmelzung oder Gießkanne möglich.
 
 ## Features
