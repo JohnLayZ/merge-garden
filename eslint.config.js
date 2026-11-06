@@ -10,7 +10,7 @@ export default tseslint.config(
   {
     files: ['src/game/**/*.ts'],
     rules: {
-      'no-restricted-globals': ['error', 'document', 'window', 'localStorage', 'Math'],
+      'no-restricted-globals': ['error', 'document', 'window', 'localStorage'],
       'no-restricted-properties': ['error', { object: 'Math', property: 'random', message: 'Use the seeded RNG.' }],
     },
   },
