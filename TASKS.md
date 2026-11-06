@@ -19,5 +19,8 @@
 - [x] T17: README.md (Start, Tests, Spielregeln)
 - [x] T18: Deployment per GitHub Pages einrichten (GitHub-Actions-Workflow, Vite `base` auf den Repo-Namen setzen, Build läuft in CI), Link-Hinweis in README
 - [x] T19: Abschlussprüfung: lint, Tests und Build grün, `STATUS.md` aktualisieren, `ALL DONE` eintragen
+- [x] T21: Spielzeit-Anzeige (reine Timer-Logik, Speicherung, Header)
+- [x] T22: Spielzeit in Sieg- und Game-Over-Overlay
+- [x] T23: Sounds per Web Audio mit Stumm-Schalter
 
 ## Ideen (nicht umsetzen, nur sammeln)

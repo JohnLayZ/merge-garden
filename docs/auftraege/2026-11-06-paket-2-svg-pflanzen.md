@@ -1,6 +1,6 @@
 Auftrag: Paket 2 – SVG-Pflanzen, Größenverhältnisse, Undo
 Datum: 2026-11-06
-Status: ausgeführt (Pull Request nach main)
+Status: ausgeführt und gemergt (Pull Request #3)
 Auftrag (Wortlaut)
 
 Lies SPEC.md, DECISIONS.md, STATUS.md und README.md. Arbeite selbständig ohne Rückfragen, ein Commit pro Punkt, mit Tests wo sinnvoll. Am Ende müssen lint, Tests und Build grün sein. Aktualisiere SPEC.md (Design-Vorgaben), trage Entscheidungen in DECISIONS.md ein und fasse den Stand in STATUS.md zusammen.
