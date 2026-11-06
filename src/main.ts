@@ -1,6 +1,6 @@
 import './style.css';
 import { moveBoard } from './game/board';
-import { applyMove, newGame } from './game/state';
+import { applyMove, newGame, undo, useWateringCan } from './game/state';
 import type { TileMove } from './game/board';
 import type { Direction, GameState } from './game/types';
 import { bindInput } from './ui/input';
@@ -25,5 +25,33 @@ function move(dir: Direction): void {
   update(next, moveBoard(state.board, dir).tiles);
 }
 
-bindInput(view.boardEl, move);
+let watering = false;
+function setWatering(on: boolean): void {
+  watering = on && state.cans > 0 && state.status !== 'lost';
+  view.setWateringMode(watering);
+}
+
+view.buttons.can.addEventListener('click', () => setWatering(!watering));
+view.onCellClick((i) => {
+  if (!watering) return;
+  const next = useWateringCan(state, i);
+  if (next === state) return; // empty cell or level 7: nothing happens, can is kept
+  update(next);
+  setWatering(false);
+});
+view.buttons.undo.addEventListener('click', () => {
+  update(undo(state));
+  setWatering(false);
+});
+const restart = () => {
+  update(newGame(Date.now() >>> 0));
+  setWatering(false);
+};
+view.buttons.newGame.addEventListener('click', restart);
+view.overlay.button.addEventListener('click', restart);
+
+bindInput(view.boardEl, (d) => {
+  setWatering(false);
+  move(d);
+});
 update(state);
