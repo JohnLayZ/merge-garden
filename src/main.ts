@@ -30,7 +30,7 @@ function move(dir: Direction): void {
 
 let watering = false;
 function setWatering(on: boolean): void {
-  watering = on && state.cans > 0 && state.status !== 'lost';
+  watering = on && state.cans > 0 && state.status === 'playing';
   view.setWateringMode(watering);
 }
 

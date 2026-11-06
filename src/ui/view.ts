@@ -14,7 +14,7 @@ export interface View {
   setWateringMode(on: boolean): void;
   boardEl: HTMLElement;
   buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; can: HTMLButtonElement };
-  overlay: { el: HTMLElement; button: HTMLButtonElement; continueBtn: HTMLButtonElement };
+  overlay: { el: HTMLElement; button: HTMLButtonElement };
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = '', text = ''): HTMLElementTagNameMap[K] {
@@ -58,8 +58,8 @@ export function createView(root: HTMLElement): View {
   overlayEl.setAttribute('aria-live', 'polite');
   const overlayText = el('p', 'overlay-text');
   const overlayBtn = el('button', 'btn primary', 'New Game');
-  const continueBtn = el('button', 'btn', 'Keep playing');
-  overlayEl.append(overlayText, overlayBtn, continueBtn);
+  const overlayScore = el('p', 'overlay-stats');
+  overlayEl.append(overlayText, overlayScore, overlayBtn);
   const boardWrap = el('div', 'board-wrap');
   boardWrap.append(boardEl, overlayEl);
 
@@ -125,8 +125,8 @@ export function createView(root: HTMLElement): View {
     scoreVal.textContent = String(state.score);
     bestVal.textContent = String(best);
     canLabel.textContent = `${state.cans}/${MAX_CANS}`;
-    canBtn.disabled = state.cans === 0 || state.status === 'lost';
-    undoBtn.disabled = state.prev === null;
+    canBtn.disabled = state.cans === 0 || state.status !== 'playing';
+    undoBtn.disabled = state.prev === null || state.status === 'won';
     state.board.forEach((level, i) => {
       const t = tiles[i];
       if (level === 0) {
@@ -145,23 +145,11 @@ export function createView(root: HTMLElement): View {
         pop(t);
       }
     });
-    overlayEl.classList.toggle('hidden', state.status === 'playing' || dismissedWin(state));
+    overlayEl.classList.toggle('hidden', state.status === 'playing');
     overlayText.textContent = state.status === 'lost' ? 'Game over' : 'You win!';
-    continueBtn.hidden = state.status !== 'won';
+    overlayScore.textContent = `Score: ${state.score} · Best: ${best}`;
     overlayEl.dataset.status = state.status;
   }
-
-  // The win overlay can be dismissed with "Keep playing" until the next game.
-  let winDismissed = false;
-  function dismissedWin(state: GameState): boolean {
-    return state.status === 'won' && winDismissed;
-  }
-  continueBtn.addEventListener('click', () => {
-    winDismissed = true;
-    overlayEl.classList.add('hidden');
-  });
-  newBtn.addEventListener('click', () => (winDismissed = false));
-  overlayBtn.addEventListener('click', () => (winDismissed = false));
 
   return {
     render,
@@ -172,6 +160,6 @@ export function createView(root: HTMLElement): View {
     },
     boardEl,
     buttons: { newGame: newBtn, undo: undoBtn, can: canBtn },
-    overlay: { el: overlayEl, button: overlayBtn, continueBtn },
+    overlay: { el: overlayEl, button: overlayBtn },
   };
 }

@@ -15,7 +15,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 4. Hat sich nach einem Zug etwas verändert, erscheinen 1–2 neue Samen (Stufe 1) auf zufälligen leeren Feldern. Bewegt sich nichts, ist der Zug ungültig und zählt nicht.
 5. **Gießkanne (eigene Regel):** Alle 10 Verschmelzungen gibt es 1 Gießkanne (max. 3). Mit einer Gießkanne kann der Spieler eine beliebige Pflanze direkt eine Stufe aufwerten (ohne Zug zu verbrauchen). Stufe 7 kann nicht aufgewertet werden.
 6. Punkte: Verschmelzung zur Stufe n gibt 2^n Punkte.
-7. Gewonnen: erster Uralter Baum (Stufe 7) entsteht. Danach darf weitergespielt werden.
+7. Gewonnen: Mit dem ersten Uralten Baum (Stufe 7) ist das Spiel gewonnen und beendet (auch wenn er durch die Gießkanne entsteht). Danach sind keine Züge, Gießkannen-Nutzung oder Undo mehr möglich; es gibt kein Weiterspielen. Der Highscore wird dennoch aktualisiert, und nach Reload bleibt der Gewonnen-Zustand samt Overlay erhalten.
 8. Verloren: Feld voll und keine Verschmelzung oder Gießkanne möglich.
 
 ## Features
@@ -26,7 +26,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - F5: Undo (genau 1 Schritt zurück)
 - F6: Gießkanne inkl. Anzeige und Auswahl einer Pflanze per Klick
 - F7: Neues Spiel, Spielstand bleibt nach Seiten-Reload erhalten
-- F8: Sieg- und Game-Over-Overlay
+- F8: Sieg- und Game-Over-Overlay: liegt über allem (inkl. Spielfeld), dunkelt das Feld ab, zeigt Text ("You win!" / "Game over"), Punktestand, Highscore und ausschließlich den Button "New Game"; bedienbar (Playwright-Test prüft das)
 - F9: Responsive (Handy-Breite ab 360px nutzbar)
 - F10: README mit Start- und Testanleitung
 
@@ -42,6 +42,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 ## Design-Vorgaben
 - Grafik: Emojis je Pflanzenstufe (1 🌰, 2 🌱, 3 🌿, 4 🪴, 5 🌷, 6 🌳, 7 🌲), keine externen Bilddateien
 - Farben: helle Pastelltöne (Frühlingsstimmung), Hintergrund cremeweiß, Spielfeld in sanftem Hellgrün, Felder in leicht abgesetzten Pastellflächen; pro Pflanzenstufe ein eigener dezenter Pastellton; gute Lesbarkeit (ausreichender Kontrast bei Text)
+- Animationen laufen IMMER, unabhängig von `prefers-reduced-motion` oder System-/Browsereinstellungen; keine Abfrage dieser Einstellung im CSS/JS (bewusste Entscheidung, nicht wieder einbauen)
 - Gefühl: ruhig und entspannt; Tiles gleiten sanft (ca. 120–150 ms), Verschmelzen mit dezentem Pop (leichtes Skalieren), keine Partikel, kein Wackeln, kein Sound
 - Schrift: eine abgerundete, gut lesbare System- oder Web-Safe-Schrift
 - Sprache der Oberfläche: Englisch (Titel "Merge Garden", Buttons "New Game", "Undo", "Watering Can", Texte "You win!" / "Game over")

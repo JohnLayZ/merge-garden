@@ -25,8 +25,8 @@ export function isBlocked(board: Board): boolean {
 }
 
 export function computeStatus(s: Pick<Snapshot, 'board' | 'cans' | 'status'>): Status {
-  if (s.status === 'won') return 'won';
-  if (s.board.includes(MAX_LEVEL)) return 'won';
+  // The first Ancient Tree ends the game: 'won' is final (no moves, cans or undo afterwards).
+  if (s.status === 'won' || s.board.includes(MAX_LEVEL)) return 'won';
   const canWater = s.cans > 0 && s.board.some((v) => v > 0 && v < MAX_LEVEL);
   return isBlocked(s.board) && !canWater ? 'lost' : 'playing';
 }
@@ -44,7 +44,7 @@ export function earnCans(cans: number, before: number, after: number): number {
 
 /** Apply a move. Invalid moves (nothing changes) return the very same state object. */
 export function applyMove(state: GameState, dir: Direction): GameState {
-  if (state.status === 'lost') return state;
+  if (state.status !== 'playing') return state;
   const res = moveBoard(state.board, dir);
   if (!res.moved) return state;
   const spawned = spawnSeeds(res.board, state.rng);
@@ -65,7 +65,7 @@ export function applyMove(state: GameState, dir: Direction): GameState {
 
 /** Upgrade the plant at `index` by one level using a can. Costs no move. No-op (same state) if impossible. */
 export function useWateringCan(state: GameState, index: number): GameState {
-  if (state.status === 'lost' || state.cans <= 0) return state;
+  if (state.status !== 'playing' || state.cans <= 0) return state;
   const level = state.board[index];
   if (!level || level >= MAX_LEVEL) return state;
   const board = state.board.slice();
@@ -75,8 +75,8 @@ export function useWateringCan(state: GameState, index: number): GameState {
   return next;
 }
 
-/** Revert the last move or watering. Only one step is kept; no-op (same state) if nothing to undo. */
+/** Revert the last move or watering (not after a win). Only one step is kept; no-op (same state) if nothing to undo. */
 export function undo(state: GameState): GameState {
-  if (!state.prev) return state;
+  if (!state.prev || state.status === 'won') return state;
   return { ...state, ...state.prev, board: state.prev.board.slice(), prev: null };
 }
