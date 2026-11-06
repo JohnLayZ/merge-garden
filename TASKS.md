@@ -1,6 +1,6 @@
 # Backlog (von oben nach unten abarbeiten)
 
-- [ ] T1: Projekt aufsetzen (Vite + TypeScript, vitest, ESLint, Skripte `dev`, `build`, `lint`, `test`, `test:e2e`)
+- [x] T1: Projekt aufsetzen (Vite + TypeScript, vitest, ESLint, Skripte `dev`, `build`, `lint`, `test`, `test:e2e`)
 - [ ] T2: Typen und Zustandsmodell (`GameState`: Feld, Punkte, Gießkannen, Verschmelzungszähler, Status, Seed)
 - [ ] T3: Zeilen-Verschmelzung als reine Funktion inkl. Tests (siehe Akzeptanzkriterien)
 - [ ] T4: Bewegen in 4 Richtungen auf dem 4x4-Feld, ungültige Züge erkennen
