@@ -2,6 +2,8 @@ import type { TileMove } from '../game/board';
 import type { GameState } from '../game/types';
 import { SIZE, MAX_CANS } from '../game/types';
 import dropSvg from '../assets/drop.svg?raw';
+import soundOnSvg from '../assets/sound-on.svg?raw';
+import soundOffSvg from '../assets/sound-off.svg?raw';
 import { formatTime } from '../game/timer';
 import { PLANTS } from './plants';
 
@@ -16,8 +18,9 @@ export interface View {
   setWateringMode(on: boolean): void;
   /** Show the play time (header and overlay), in ms. */
   setTime(ms: number): void;
+  setMuted(muted: boolean): void;
   boardEl: HTMLElement;
-  buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; can: HTMLButtonElement };
+  buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; can: HTMLButtonElement; mute: HTMLButtonElement };
   overlay: { el: HTMLElement; button: HTMLButtonElement };
 }
 
@@ -47,7 +50,9 @@ export function createView(root: HTMLElement): View {
   timeVal.setAttribute('data-testid', 'time');
   const timeBox = el('div', 'box');
   timeBox.append(el('span', 'box-label', 'Time'), timeVal);
-  header.append(title, scoreBox, bestBox, timeBox);
+  const muteBtn = el('button', 'btn icon-btn');
+  muteBtn.type = 'button';
+  header.append(title, scoreBox, bestBox, timeBox, muteBtn);
 
   const boardEl = el('div', 'board');
   boardEl.setAttribute('role', 'grid');
@@ -168,16 +173,24 @@ export function createView(root: HTMLElement): View {
     overlayTime.textContent = `Time: ${text}`;
   }
 
+  function setMuted(muted: boolean): void {
+    muteBtn.innerHTML = muted ? soundOffSvg : soundOnSvg;
+    muteBtn.setAttribute('aria-pressed', String(muted));
+    muteBtn.setAttribute('aria-label', muted ? 'Unmute' : 'Mute');
+    muteBtn.title = muted ? 'Unmute' : 'Mute';
+  }
+
   return {
     render,
     setTime,
+    setMuted,
     onCellClick: (h) => (clickHandler = h),
     setWateringMode: (on) => {
       boardEl.classList.toggle('watering', on);
       canBtn.classList.toggle('active', on);
     },
     boardEl,
-    buttons: { newGame: newBtn, undo: undoBtn, can: canBtn },
+    buttons: { newGame: newBtn, undo: undoBtn, can: canBtn, mute: muteBtn },
     overlay: { el: overlayEl, button: overlayBtn },
   };
 }

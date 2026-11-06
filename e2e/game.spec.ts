@@ -110,3 +110,14 @@ test('win overlay shows the frozen play time, also after reload', async ({ page 
   await page.reload();
   await expect(page.locator('.overlay-time')).toHaveText(shown!);
 });
+
+test('mute toggle is in the header and its state survives reload', async ({ page }) => {
+  await page.goto('/');
+  const mute = page.locator('.header').getByRole('button', { name: 'Mute' });
+  await expect(mute).toBeVisible();
+  await mute.click();
+  await expect(page.locator('.header').getByRole('button', { name: 'Unmute' })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('merge-garden:muted'))).toBe('1');
+  await page.reload();
+  await expect(page.locator('.header').getByRole('button', { name: 'Unmute' })).toBeVisible();
+});

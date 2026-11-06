@@ -5,12 +5,32 @@ import type { TileMove } from './game/board';
 import type { Direction, GameState } from './game/types';
 import { loadGame, saveGame } from './storage';
 import { elapsedAt, idleTimer, pauseTimer, resumeTimer, shouldRun, type TimerState } from './game/timer';
+import { createSound } from './audio/sound';
 import { bindInput } from './ui/input';
 import { createView } from './ui/view';
 
 const root = document.getElementById('app');
 if (!root) throw new Error('#app missing');
 const view = createView(root);
+
+const sound = createSound({ kv: localStorage });
+view.setMuted(sound.muted);
+view.buttons.mute.addEventListener('click', () => {
+  sound.setMuted(!sound.muted);
+  view.setMuted(sound.muted);
+});
+// Browsers only allow audio after a user action: create the audio context on the first one.
+for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) {
+  document.addEventListener(type, () => sound.unlock(), { capture: true, passive: true });
+}
+
+/** Sound for the outcome of an action: end of game wins over merge/water. */
+function playOutcome(next: GameState, kind: 'move' | 'water', mergedLevel = 0): void {
+  if (next.status === 'won') sound.play('win');
+  else if (next.status === 'lost') sound.play('lose');
+  else if (kind === 'water') sound.play('water');
+  else if (mergedLevel > 0) sound.play('merge', mergedLevel);
+}
 
 const saved = loadGame(localStorage);
 let state: GameState = saved?.state ?? newGame(Date.now() >>> 0);
@@ -57,7 +77,10 @@ window.addEventListener('pagehide', () => {
 function move(dir: Direction): void {
   const next = applyMove(state, dir);
   if (next === state) return;
-  update(next, moveBoard(state.board, dir).tiles);
+  const tiles = moveBoard(state.board, dir).tiles;
+  const mergedLevel = Math.max(0, ...tiles.filter((t) => t.merged).map((t) => state.board[t.from] + 1));
+  playOutcome(next, 'move', mergedLevel);
+  update(next, tiles);
 }
 
 let watering = false;
@@ -71,6 +94,7 @@ view.onCellClick((i) => {
   if (!watering) return;
   const next = useWateringCan(state, i);
   if (next === state) return; // empty cell or level 7: nothing happens, can is kept
+  playOutcome(next, 'water');
   update(next);
   setWatering(false);
 });
