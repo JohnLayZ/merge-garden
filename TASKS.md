@@ -16,7 +16,7 @@
 - [x] T14: Sieg- und Game-Over-Overlay
 - [x] T15: Responsive Layout (ab 360px)
 - [x] T16 (optional): Playwright-Tests (Spiel starten und Zug machen; Reload erhält Spielstand). Falls der Browser-Download in dieser Umgebung nicht klappt: in `DECISIONS.md` vermerken und überspringen.
-- [ ] T17: README.md (Start, Tests, Spielregeln)
+- [x] T17: README.md (Start, Tests, Spielregeln)
 - [ ] T18: Deployment per GitHub Pages einrichten (GitHub-Actions-Workflow, Vite `base` auf den Repo-Namen setzen, Build läuft in CI), Link-Hinweis in README
 - [ ] T19: Abschlussprüfung: lint, Tests und Build grün, `STATUS.md` aktualisieren, `ALL DONE` eintragen
 
