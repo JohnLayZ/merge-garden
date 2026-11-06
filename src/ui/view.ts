@@ -1,6 +1,7 @@
 import type { TileMove } from '../game/board';
 import type { GameState } from '../game/types';
 import { SIZE, MAX_CANS } from '../game/types';
+import dropSvg from '../assets/drop.svg?raw';
 import { PLANTS } from './plants';
 
 interface Tile {
@@ -65,7 +66,9 @@ export function createView(root: HTMLElement): View {
 
   const canLabel = el('span', 'can-count', '0');
   const canBtn = el('button', 'btn', '');
-  canBtn.append(el('span', '', '💧 Watering Can '), canLabel);
+  const drop = el('span', 'drop');
+  drop.innerHTML = dropSvg;
+  canBtn.append(drop, el('span', '', 'Watering Can '), canLabel);
   const undoBtn = el('button', 'btn', 'Undo');
   const newBtn = el('button', 'btn', 'New Game');
   const controls = el('div', 'controls');
@@ -85,7 +88,7 @@ export function createView(root: HTMLElement): View {
   function paint(tile: Tile, level: number): void {
     tile.level = level;
     tile.el.dataset.level = String(level);
-    tile.el.textContent = PLANTS[level].emoji;
+    tile.el.innerHTML = `<span class="plant" style="--s:${PLANTS[level].scale}">${PLANTS[level].svg}</span>`;
     tile.el.setAttribute('aria-label', PLANTS[level].name);
   }
 
@@ -126,7 +129,7 @@ export function createView(root: HTMLElement): View {
     bestVal.textContent = String(best);
     canLabel.textContent = `${state.cans}/${MAX_CANS}`;
     canBtn.disabled = state.cans === 0 || state.status !== 'playing';
-    undoBtn.disabled = state.prev === null || state.status === 'won';
+    undoBtn.disabled = state.prev === null || state.status !== 'playing';
     state.board.forEach((level, i) => {
       const t = tiles[i];
       if (level === 0) {

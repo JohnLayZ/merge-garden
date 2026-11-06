@@ -42,3 +42,19 @@ describe('storage', () => {
     expect(loadGame(bad)).toBeNull();
   });
 });
+
+describe('storage + game over', () => {
+  it('keeps undo locked after reload in the lost state', async () => {
+    const { undo } = await import('../src/game/state');
+    const kv = fake();
+    const s = applyMove(
+      { ...newGame(1), board: [1, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 0, 2, 1, 2] },
+      'left',
+    );
+    expect(s.status).toBe('lost');
+    saveGame(kv, s, 0);
+    const loaded = loadGame(kv)!.state;
+    expect(loaded.status).toBe('lost');
+    expect(undo(loaded)).toBe(loaded);
+  });
+});

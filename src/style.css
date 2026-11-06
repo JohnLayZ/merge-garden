@@ -42,7 +42,7 @@ body {
 .tile {
   transition: left 130ms ease-out, top 130ms ease-out;
   z-index: 1;
-  display: flex; align-items: center; justify-content: center; font-size: 14cqw;
+  display: flex; align-items: flex-end; justify-content: center; padding: 4% 3%;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06); background: var(--l1);
 }
 .tile[data-level="1"] { background: var(--l1); }
@@ -91,3 +91,9 @@ body {
 }
 
 .overlay .btn { flex: none; min-width: 140px; }
+
+.plant { display: block; width: calc(var(--s) * 100%); aspect-ratio: 1; line-height: 0; }
+.plant svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.drop { display: inline-block; width: 1.1em; height: 1.1em; vertical-align: -0.2em; margin-right: 0.3em; }
+.drop svg { width: 100%; height: 100%; display: block; }
