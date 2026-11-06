@@ -10,7 +10,7 @@
 - [x] T8: Undo (1 Schritt) inkl. Tests
 - [x] T9: Rendering des Feldes mit Emojis, Punktestand, Gießkannen-Anzeige
 - [x] T10: Steuerung per Pfeiltasten, WASD und Touch-Wischen
-- [ ] T11: Animationen (Gleiten, Verschmelz-Pop), per CSS
+- [x] T11: Animationen (Gleiten, Verschmelz-Pop), per CSS
 - [ ] T12: Gießkanne bedienen per Klick auf Pflanze, Buttons für Undo und Neues Spiel
 - [ ] T13: Persistenz von Spielstand und Highscore (localStorage), mit Tests
 - [ ] T14: Sieg- und Game-Over-Overlay

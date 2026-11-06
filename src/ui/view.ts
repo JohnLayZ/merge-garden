@@ -1,3 +1,4 @@
+import type { TileMove } from '../game/board';
 import type { GameState } from '../game/types';
 import { SIZE, MAX_CANS } from '../game/types';
 import { PLANTS } from './plants';
@@ -8,7 +9,7 @@ interface Tile {
 }
 
 export interface View {
-  render(state: GameState, best: number): void;
+  render(state: GameState, best: number, moves?: TileMove[]): void;
   onCellClick(handler: (index: number) => void): void;
   setWateringMode(on: boolean): void;
   boardEl: HTMLElement;
@@ -86,7 +87,39 @@ export function createView(root: HTMLElement): View {
     tile.el.setAttribute('aria-label', PLANTS[level].name);
   }
 
-  function render(state: GameState, best: number): void {
+  const SLIDE_MS = 130;
+  function pop(tile: Tile): void {
+    tile.el.classList.remove('pop');
+    void tile.el.offsetWidth; // restart animation
+    tile.el.classList.add('pop');
+  }
+
+  /** Move existing tile elements so they glide to their new cells; merged tiles vanish after sliding. */
+  function applyMoves(moves: TileMove[]): void {
+    const before = tiles.slice();
+    const next: (Tile | null)[] = new Array(SIZE * SIZE).fill(null);
+    for (const m of moves) {
+      const tile = before[m.from];
+      if (!tile) continue;
+      place(tile.el, m.to);
+      if (m.merged) {
+        const survivor = next[m.to];
+        const gone = tile;
+        gone.el.style.zIndex = '0';
+        setTimeout(() => gone.el.remove(), SLIDE_MS);
+        if (survivor) {
+          paint(survivor, survivor.level + 1);
+          pop(survivor);
+        }
+      } else {
+        next[m.to] = tile;
+      }
+    }
+    for (let i = 0; i < tiles.length; i++) tiles[i] = next[i];
+  }
+
+  function render(state: GameState, best: number, moves?: TileMove[]): void {
+    if (moves) applyMoves(moves);
     scoreVal.textContent = String(state.score);
     bestVal.textContent = String(best);
     canLabel.textContent = `${state.cans}/${MAX_CANS}`;
@@ -103,9 +136,11 @@ export function createView(root: HTMLElement): View {
         tilesLayer.append(node);
         const tile = { el: node, level };
         paint(tile, level);
+        if (moves) node.classList.add('spawn');
         tiles[i] = tile;
       } else if (t.level !== level) {
         paint(t, level);
+        pop(t);
       }
     });
     overlayEl.classList.toggle('hidden', state.status === 'playing' || dismissedWin(state));
