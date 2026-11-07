@@ -2,8 +2,13 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const dist = resolve(__dirname, '../dist');
+// The project has no @types/node (no extra dependency for one test), so declare what is used here.
+declare const process: { env: Record<string, string | undefined> };
+const here = fileURLToPath(new URL('.', import.meta.url));
+
+const dist = resolve(here, '../dist');
 const file = (f: string) => resolve(dist, f);
 
 function pngSize(path: string): [number, number] {
@@ -18,7 +23,7 @@ describe.each([
 ])('built dist with base %s', (base, prefix) => {
   let html = '';
   beforeAll(() => {
-    execSync('npx vite build', { cwd: resolve(__dirname, '..'), env: { ...process.env, BASE_PATH: base }, stdio: 'pipe' });
+    execSync('npx vite build', { cwd: resolve(here, '..'), env: { ...process.env, BASE_PATH: base }, stdio: 'pipe' });
     html = readFileSync(file('index.html'), 'utf8');
   }, 60000);
 

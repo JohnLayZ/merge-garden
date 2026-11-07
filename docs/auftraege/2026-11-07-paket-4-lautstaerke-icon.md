@@ -1,0 +1,30 @@
+Auftrag: Paket 4 – Lautstärke, Icon, Branch-Löschung
+Datum: 2026-11-07
+Status: ausgeführt (Pull Request nach main, siehe Abschlusstext)
+Auftrag (Wortlaut)
+
+Arbeite vom aktuellen Stand von main aus: Hole zuerst den neuesten Stand (git fetch) und lege deinen Arbeitsbranch auf Basis von origin/main an.
+
+Lies CLAUDE.md, SPEC.md, DECISIONS.md, STATUS.md und README.md. Arbeite selbständig ohne Rückfragen, ein Commit pro Punkt, mit Tests wo sinnvoll. Am Ende müssen lint, Tests und Build grün sein. Befolge die Regeln aus CLAUDE.md (Release-Ablauf und Dokumentation der Aufträge). Trage Entscheidungen in DECISIONS.md ein und aktualisiere STATUS.md.
+
+1. Sounds lauter machen: Die Sounds in src/audio/sound.ts sind auf dem Handy deutlich zu leise. Der Tester musste die Handylautstärke auf etwa 75 % stellen, um sie einigermaßen zu hören. Ziel: Bei etwa 40 bis 50 % Handylautstärke sollen alle Sounds gut hörbar, aber weiterhin entspannt und nicht aufdringlich sein. Hebe dafür die Gesamtlautstärke deutlich an, grob auf das Doppelte bis Dreifache der bisherigen Spitzenlautstärke. Kann der Pegel dabei zu hoch werden, nutze statt weiterer Anhebung der Einzelwerte einen DynamicsCompressor als Begrenzer am Ausgang, damit nichts übersteuert oder knackst.
+
+2. Lautstärke zentral steuern: Lege eine einzige Konstante MASTER_VOLUME für die Gesamtlautstärke an, an der man später mit einem Wert nachjustieren kann. Die Lautstärken der einzelnen Sounds (Verschmelzen, Gießkanne, Sieg, Game Over) bleiben im Verhältnis zueinander wie bisher. Es soll keiner der Sounds schriller oder schärfer werden, nur lauter. Beim Verschmelzen dürfen höhere Töne nicht lauter wirken als tiefe, gleiche die wahrgenommene Lautstärke bei Bedarf über die Gain-Werte aus.
+
+3. Tests für die Lautstärke: Ergänze Unit-Tests, die prüfen, dass alle Gain-Werte im gültigen Bereich liegen (nicht über 1), dass MASTER_VOLUME existiert und alle Sounds darüber laufen und dass der Stumm-Schalter weiterhin alles stumm schaltet. Schreibe in DECISIONS.md, welche Werte vorher und nachher gelten und warum.
+
+4. Branch-Löschung zuverlässig machen: Lösche den Arbeitsbranch nach dem Merge mit dem GitHub-Werkzeug (nicht mit git push --delete), mit dem du auch den Pull Request mergst. Schlägt das fehl, versuche es höchstens einmal erneut und nenne es dann im Abschlusstext, mit dem Hinweis, dass der Branch per Klick im gemergten Pull Request gelöscht werden kann. Halte diese Regel in CLAUDE.md fest.
+
+5. Spiel-Link in README: Ersetze in der README den Platzhalter für die Spiel-Adresse durch die echte Adresse https://johnlayz.github.io/merge-garden/.
+
+6. Icon und Handy-Darstellung: Erstelle ein eigenes Icon im Stil der Pflanzen (flach, abgerundet, Pastelltöne, passend zu den vorhandenen SVGs, z. B. der Spross auf pastellgrünem, abgerundetem Quadrat). Lege es als SVG ab und erzeuge daraus PNGs in 192 x 192 und 512 x 512 Pixeln (nutze dafür die vorhandenen Werkzeuge der Umgebung, z. B. Playwright; lege die fertigen PNGs ins Projekt, das Erzeugungsskript nur unter dev/). Binde es als Favicon ein. Ergänze ein Web-App-Manifest (Name "Merge Garden", Kurzname "Merge Garden", Anzeigemodus standalone, Hintergrund- und Themenfarbe passend zur Pastelloptik) und ein theme-color-Meta-Tag. Alle Pfade müssen mit der Vite-Basis /merge-garden/ funktionieren, also relativ bzw. über die Vite-Basis eingebunden werden, und sowohl lokal mit npm run dev als auch auf GitHub Pages stimmen. Ein Service Worker ist nicht nötig, das Spiel muss nicht offlinefähig installierbar sein. Ergänze einen Test, der prüft, dass das gebaute dist/ das Manifest, beide PNGs und das Favicon enthält und dass index.html darauf verweist. Prüfe das Icon per Screenshot der Vorschau und bessere nach, wenn es verwaschen oder abgeschnitten wirkt.
+
+Reihenfolge am Ende: Führe zuerst die Punkte 1 bis 6 aus, lege dann die Auftragsdatei in docs/auftraege/ an (Dateiname mit heutigem Datum und fortlaufender Nummer, hier Paket 4, z. B. 2026-11-07-paket-4-lautstaerke-icon.md), und führe den Release-Ablauf ganz zuletzt aus, damit die Datei im selben Pull Request landet. Der Abschlusstext soll in der ersten Zeile sagen, ob der Merge geklappt hat und ob die neue Version online ist, und die alten und neuen Lautstärkewerte nennen.
+
+Ergebnis
+Alle sechs Punkte umgesetzt. Lint, 91 Unit-Tests, Build und 6 Playwright-Tests grün.
+Lautstärke: MASTER_VOLUME (src/audio/sound.ts) von 0,12 auf 0,30 (2,5×). Alle Töne laufen über einen DynamicsCompressor als Begrenzer (−12 dB, Ratio 12). Relative Gains stehen in GAINS (alle ≤ 1), Verhältnisse zwischen Verschmelzen, Gießkanne, Sieg und Game Over sind unverändert; Wellenformen, Tonhöhen und Dauer ebenfalls. Merge-Gain sinkt nach Stufe (Stufe 2: 1,00 bis Stufe 7: 0,74), damit hohe Töne nicht lauter wirken. Spitzen vorher → nachher: Merge Stufe 2 0,120 → 0,300, Stufe 7 0,120 → 0,222, Gießkanne 0,096/0,084 → 0,240/0,210, Sieg 0,108 → 0,270 (Akkord 0,060 → 0,150), Game Over 0,084 → 0,210. Neue Tests: Gains ≤ 1, MASTER_VOLUME-Skalierung, Routing über den Limiter, Stumm-Schalter für alle vier Sounds. Details in DECISIONS.md.
+Branch-Löschung: Regel in CLAUDE.md. README: Spiel-Adresse eingetragen.
+Icon: public/icon.svg (Spross auf pastellgrünem, abgerundetem Quadrat), PNGs 192/512 in public/, Erzeugung per dev/make-icons.mjs (Playwright). Favicon, apple-touch-icon, Manifest (standalone, Hintergrund #fffdf5, Theme #cfe8cf) und theme-color eingebunden, Pfade über die Vite-Basis bzw. relativ. Test tests/icons.test.ts baut dist/ mit Basis ./ und /merge-garden/ und prüft Dateien, PNG-Größen, Manifest und Links. Screenshot-Prüfung (512/192/60/32 px): scharf, nichts abgeschnitten.
+Bewusst anders gelöst: Der bestehende Test "Spitze ≤ 0,2" prüft jetzt gegen MASTER_VOLUME (die zentrale Obergrenze), nicht abgeschwächt. Für den Icon-Test gibt es kleine Typ-Deklarationen (tests/node-shim.d.ts) statt der neuen Abhängigkeit @types/node.
+Offen: Der Klang bzw. die Lautstärke am echten Handy kann hier nicht gehört werden; Feinjustierung über MASTER_VOLUME. Ob Merge und Deploy geklappt haben, steht im Abschlusstext.
