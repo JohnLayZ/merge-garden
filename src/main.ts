@@ -1,6 +1,6 @@
 import './style.css';
 import { moveBoard } from './game/board';
-import { applyMove, newGame, undo, useWateringCan } from './game/state';
+import { applyMove, newGame, undo } from './game/state';
 import type { TileMove } from './game/board';
 import type { Direction, GameState } from './game/types';
 import { loadGame, saveGame } from './storage';
@@ -24,11 +24,10 @@ for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) {
   document.addEventListener(type, () => sound.unlock(), { capture: true, passive: true });
 }
 
-/** Sound for the outcome of an action: end of game wins over merge/water. */
-function playOutcome(next: GameState, kind: 'move' | 'water', mergedLevel = 0): void {
+/** Sound for the outcome of a move: end of game wins over merge. */
+function playOutcome(next: GameState, mergedLevel: number): void {
   if (next.status === 'won') sound.play('win');
   else if (next.status === 'lost') sound.play('lose');
-  else if (kind === 'water') sound.play('water');
   else if (mergedLevel > 0) sound.play('merge', mergedLevel);
 }
 
@@ -79,38 +78,16 @@ function move(dir: Direction): void {
   if (next === state) return;
   const tiles = moveBoard(state.board, dir).tiles;
   const mergedLevel = Math.max(0, ...tiles.filter((t) => t.merged).map((t) => state.board[t.from] + 1));
-  playOutcome(next, 'move', mergedLevel);
+  playOutcome(next, mergedLevel);
   update(next, tiles);
 }
 
-let watering = false;
-function setWatering(on: boolean): void {
-  watering = on && state.cans > 0 && state.status === 'playing';
-  view.setWateringMode(watering);
-}
-
-view.buttons.can.addEventListener('click', () => setWatering(!watering));
-view.onCellClick((i) => {
-  if (!watering) return;
-  const next = useWateringCan(state, i);
-  if (next === state) return; // empty cell or level 7: nothing happens, can is kept
-  playOutcome(next, 'water');
-  update(next);
-  setWatering(false);
-});
-view.buttons.undo.addEventListener('click', () => {
-  update(undo(state));
-  setWatering(false);
-});
+view.buttons.undo.addEventListener('click', () => update(undo(state)));
 const restart = () => {
   update(newGame(Date.now() >>> 0), undefined, true);
-  setWatering(false);
 };
 view.buttons.newGame.addEventListener('click', restart);
 view.overlay.button.addEventListener('click', restart);
 
-bindInput(view.boardEl, (d) => {
-  setWatering(false);
-  move(d);
-});
+bindInput(view.boardEl, move);
 update(state);

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { loadGame, saveGame, type KV } from '../src/storage';
+import { SAVE_VERSION, loadGame, saveGame, type KV } from '../src/storage';
 import { applyMove, newGame } from '../src/game/state';
 
 const fake = (): KV & { data: Map<string, string> } => {
@@ -19,13 +19,13 @@ describe('storage', () => {
     expect(loadGame(kv)).toBeNull();
     kv.setItem('merge-garden:v1', '{nope');
     expect(loadGame(kv)).toBeNull();
-    kv.setItem('merge-garden:v1', JSON.stringify({ state: { board: [1, 2] }, best: 1 }));
+    kv.setItem('merge-garden:v1', JSON.stringify({ version: SAVE_VERSION, state: { board: [1, 2] }, best: 1 }));
     expect(loadGame(kv)).toBeNull();
   });
   it('rejects out-of-range plant levels', () => {
     const kv = fake();
     const s = newGame(1);
-    saveGame(kv, { ...s, board: s.board.map(() => 9) }, 0);
+    saveGame(kv, { ...s, board: s.board.map(() => 99) }, 0);
     expect(loadGame(kv)).toBeNull();
   });
   it('best is never below the stored score and the game continues deterministically', () => {
@@ -34,7 +34,7 @@ describe('storage', () => {
     saveGame(kv, s, 0);
     const loaded = loadGame(kv)!;
     expect(loaded.best).toBe(s.score);
-    expect(applyMove(loaded.state, 'up')).toEqual(applyMove(s, 'up'));
+    expect(applyMove(loaded.state!, 'up')).toEqual(applyMove(s, 'up'));
   });
   it('does not throw if storage fails', () => {
     const bad: KV = { getItem: () => { throw new Error('x'); }, setItem: () => { throw new Error('x'); } };
@@ -53,7 +53,7 @@ describe('storage + game over', () => {
     );
     expect(s.status).toBe('lost');
     saveGame(kv, s, 0);
-    const loaded = loadGame(kv)!.state;
+    const loaded = loadGame(kv)!.state!;
     expect(loaded.status).toBe('lost');
     expect(undo(loaded)).toBe(loaded);
   });
@@ -64,15 +64,32 @@ describe('storage play time', () => {
     const kv = fake();
     const s = { ...applyMove(newGame(5), 'left'), playMs: 83_000 };
     saveGame(kv, s, 10);
-    expect(loadGame(kv)?.state.playMs).toBe(83_000);
+    expect(loadGame(kv)?.state?.playMs).toBe(83_000);
   });
   it('defaults to 0 for old saves without playMs or with invalid values', () => {
     const kv = fake();
     const s = newGame(5) as unknown as Record<string, unknown>;
     delete s.playMs;
-    kv.setItem('merge-garden:v1', JSON.stringify({ state: s, best: 0 }));
-    expect(loadGame(kv)?.state.playMs).toBe(0);
-    kv.setItem('merge-garden:v1', JSON.stringify({ state: { ...s, playMs: -4 }, best: 0 }));
-    expect(loadGame(kv)?.state.playMs).toBe(0);
+    kv.setItem('merge-garden:v1', JSON.stringify({ version: SAVE_VERSION, state: s, best: 0 }));
+    expect(loadGame(kv)?.state?.playMs).toBe(0);
+    kv.setItem('merge-garden:v1', JSON.stringify({ version: SAVE_VERSION, state: { ...s, playMs: -4 }, best: 0 }));
+    expect(loadGame(kv)?.state?.playMs).toBe(0);
+  });
+});
+
+describe('storage version', () => {
+  it('discards an old save (no or old version) but keeps the best score', () => {
+    const kv = fake();
+    const old = { ...newGame(7), cans: 2, mergeCount: 12, score: 40 };
+    kv.setItem('merge-garden:v1', JSON.stringify({ state: old, best: 900 }));
+    expect(loadGame(kv)).toEqual({ state: null, best: 900 });
+    kv.setItem('merge-garden:v1', JSON.stringify({ version: SAVE_VERSION - 1, state: old, best: 300 }));
+    expect(loadGame(kv)).toEqual({ state: null, best: 300 });
+  });
+  it('writes the current version and loads such a save', () => {
+    const kv = fake();
+    saveGame(kv, newGame(2), 5);
+    expect(JSON.parse(kv.data.get('merge-garden:v1')!).version).toBe(SAVE_VERSION);
+    expect(loadGame(kv)?.state).not.toBeNull();
   });
 });

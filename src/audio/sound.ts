@@ -5,7 +5,7 @@ import type { KV } from '../storage';
  * Lives outside src/game so the game logic stays pure. The AudioContext is only created
  * by `unlock()`, which is called on the first user action (browser autoplay rules).
  */
-export type SoundEvent = 'merge' | 'water' | 'win' | 'lose';
+export type SoundEvent = 'merge' | 'win' | 'lose';
 
 export const MUTE_KEY = 'merge-garden:muted';
 
@@ -26,8 +26,6 @@ export const GAINS = {
   mergeByLevel: { 2: 1, 3: 0.97, 4: 0.9, 5: 0.85, 6: 0.8, 7: 0.74 } as Record<number, number>,
   mergeOctave: 0.35,
   mergeFifth: 0.3,
-  waterLow: 0.8,
-  waterHigh: 0.7,
   winNote: 0.9,
   winChord: 0.5,
   lose: 0.7,
@@ -148,10 +146,6 @@ export function createSound({ kv, create = defaultCreate }: SoundOptions): Sound
           if (lv >= 6) tone(c, f * 1.5, t, 0.5, GAINS.mergeFifth * lg);
           break;
         }
-        case 'water':
-          tone(c, 392.0, t, 0.3, GAINS.waterLow, 'triangle');
-          tone(c, 587.33, t + 0.09, 0.4, GAINS.waterHigh);
-          break;
         case 'win':
           [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(c, f, t + i * 0.14, 0.6, GAINS.winNote));
           tone(c, 523.25, t + 0.56, 1.2, GAINS.winChord);

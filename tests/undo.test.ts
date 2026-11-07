@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyMove, newGame, undo, useWateringCan } from '../src/game/state';
-import type { GameState } from '../src/game/types';
+import { applyMove, newGame, undo } from '../src/game/state';
 
 describe('undo', () => {
   it('does nothing on a fresh game', () => {
@@ -26,11 +25,12 @@ describe('undo', () => {
     const b = applyMove(undo(a), 'down');
     expect(b.board).toEqual(a.board);
   });
-  it('undoes a watering can use', () => {
-    const base: GameState = { ...newGame(1), board: [3, ...new Array(15).fill(0)], cans: 1 };
-    const w = useWateringCan(base, 0);
-    const u = undo(w);
-    expect(u.board[0]).toBe(3);
-    expect(u.cans).toBe(1);
+  it('is locked after a win and after game over', () => {
+    const won = applyMove({ ...newGame(1), board: [6, 6, ...new Array(14).fill(0)] }, 'left');
+    expect(won.status).toBe('won');
+    expect(undo(won)).toBe(won);
+    const lost = applyMove({ ...newGame(1), board: [1, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 0, 2, 1, 2] }, 'left');
+    expect(lost.status).toBe('lost');
+    expect(undo(lost)).toBe(lost);
   });
 });

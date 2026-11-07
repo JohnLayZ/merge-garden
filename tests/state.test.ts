@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyMove, computeStatus, isBlocked, newGame, undo, useWateringCan } from '../src/game/state';
+import { applyMove, computeStatus, isBlocked, newGame, undo } from '../src/game/state';
 import type { Direction, GameState } from '../src/game/types';
 
 const withBoard = (rows: number[][], extra: Partial<GameState> = {}): GameState => ({
@@ -27,7 +27,6 @@ describe('applyMove', () => {
     const n = applyMove(s, 'left');
     expect(n.score).toBe(4);
     expect(n.moves).toBe(1);
-    expect(n.mergeCount).toBe(1);
     expect(n.board[0]).toBe(2);
     expect(n.board.filter((v) => v > 0).length).toBeGreaterThanOrEqual(2);
   });
@@ -46,21 +45,16 @@ describe('status', () => {
     expect(n.score).toBe(128);
     for (const d of ['left', 'right', 'up', 'down'] as Direction[]) expect(applyMove(n, d)).toBe(n);
   });
-  it('rejects watering and undo after a win', () => {
-    const n = applyMove(withBoard([[6, 6, 3, 0], Z, Z, Z], { cans: 2 }), 'left');
+  it('rejects undo after a win', () => {
+    const n = applyMove(withBoard([[6, 6, 3, 0], Z, Z, Z]), 'left');
     expect(n.status).toBe('won');
     expect(n.prev).not.toBeNull();
-    expect(useWateringCan(n, 1)).toBe(n);
     expect(undo(n)).toBe(n);
   });
-  it('is lost on a full board without merges or cans', () => {
+  it('is lost on a full board without merges', () => {
     const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];
     expect(isBlocked(rows.flat())).toBe(true);
-    expect(computeStatus({ board: rows.flat(), cans: 0, status: 'playing' })).toBe('lost');
-  });
-  it('is not lost while a can can still upgrade something', () => {
-    const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];
-    expect(computeStatus({ board: rows.flat(), cans: 1, status: 'playing' })).toBe('playing');
+    expect(computeStatus({ board: rows.flat(), status: 'playing' })).toBe('lost');
   });
   it('is lost after a move fills the board with no merges left', () => {
     const s = withBoard([[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [0, 2, 1, 2]]);
@@ -68,7 +62,7 @@ describe('status', () => {
     expect(n.board.every((v) => v > 0)).toBe(true);
     expect(n.status).toBe('lost');
   });
-  it('rejects undo (and watering) after game over', () => {
+  it('rejects undo after game over', () => {
     const s = withBoard([[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [0, 2, 1, 2]]);
     const n = applyMove(s, 'left');
     expect(n.status).toBe('lost');

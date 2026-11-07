@@ -66,14 +66,16 @@ describe('sound', () => {
     const s = createSound({ kv, create: () => f.ctx });
     s.unlock();
     s.setMuted(true);
-    s.play('water');
+    s.play('merge', 3);
+    s.play('win');
+    s.play('lose');
     expect(f.osc.length).toBe(0);
     expect(kv.data.get('merge-garden:muted')).toBe('1');
     expect(createSound({ kv, create: () => f.ctx }).muted).toBe(true);
     s.setMuted(false);
     expect(kv.data.get('merge-garden:muted')).toBe('0');
     expect(createSound({ kv, create: () => f.ctx }).muted).toBe(false);
-    s.play('water');
+    s.play('merge', 3);
     expect(f.osc.length).toBeGreaterThan(0);
   });
   it('merge notes rise with the plant level and stay soft', () => {
@@ -83,7 +85,7 @@ describe('sound', () => {
     const f = fakeCtx();
     const s = createSound({ kv: fakeKv(), create: () => f.ctx });
     s.unlock();
-    for (const e of ['merge', 'water', 'win', 'lose'] as const) s.play(e, 4);
+    for (const e of ['merge', 'win', 'lose'] as const) s.play(e, 4);
     expect(f.osc.every((o) => o.type === 'sine' || o.type === 'triangle')).toBe(true);
     expect(Math.max(...f.peaks)).toBeLessThanOrEqual(MASTER_VOLUME);
   });
@@ -94,12 +96,11 @@ describe('sound', () => {
   });
 
   describe('volume', () => {
-    const all = ['merge', 'water', 'win', 'lose'] as const;
+    const all = ['merge', 'win', 'lose'] as const;
     const playAll = (f: ReturnType<typeof fakeCtx>) => {
       const s = createSound({ kv: fakeKv(), create: () => f.ctx });
       s.unlock();
       for (const lv of [2, 3, 4, 5, 6, 7]) s.play('merge', lv);
-      s.play('water');
       s.play('win');
       s.play('lose');
     };
