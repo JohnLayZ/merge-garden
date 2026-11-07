@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { elapsedAt, formatTime, idleTimer, pauseTimer, resumeTimer, shouldRun } from '../src/game/timer';
+import { elapsedAt, formatTime, idleTimer, inputEnabled, pauseTimer, resumeTimer, shouldRun } from '../src/game/timer';
 
 describe('formatTime', () => {
   it('formats m:ss below one hour', () => {
@@ -72,5 +72,21 @@ describe('shouldRun', () => {
     expect(shouldRun({ status: 'playing', moves: 3 }, false)).toBe(false);
     expect(shouldRun({ status: 'won', moves: 3 }, true)).toBe(false);
     expect(shouldRun({ status: 'lost', moves: 3 }, true)).toBe(false);
+  });
+});
+
+describe('How to play overlay', () => {
+  const playing = { status: 'playing', moves: 3 } as const;
+  it('pauses the timer while open and lets it run again after closing', () => {
+    expect(shouldRun(playing, true, false)).toBe(true);
+    expect(shouldRun(playing, true, true)).toBe(false);
+    let t = resumeTimer(idleTimer(0), 0);
+    t = pauseTimer(t, 1000); // help opens after 1 s
+    t = shouldRun(playing, true, false) ? resumeTimer(t, 6000) : t; // closed 5 s later
+    expect(elapsedAt(t, 7000)).toBe(2000); // the 5 s while open do not count
+  });
+  it('ignores game input while open', () => {
+    expect(inputEnabled(true)).toBe(false);
+    expect(inputEnabled(false)).toBe(true);
   });
 });

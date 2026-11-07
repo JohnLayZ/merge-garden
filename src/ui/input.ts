@@ -17,8 +17,9 @@ export function swipeDirection(dx: number, dy: number, threshold = 24): Directio
   return dy > 0 ? 'down' : 'up';
 }
 
-export function bindInput(target: HTMLElement, onMove: (d: Direction) => void): void {
+export function bindInput(target: HTMLElement, onMove: (d: Direction) => void, enabled: () => boolean = () => true): void {
   window.addEventListener('keydown', (e) => {
+    if (!enabled()) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const d = keyToDirection(e.key);
     if (d) {
@@ -28,7 +29,7 @@ export function bindInput(target: HTMLElement, onMove: (d: Direction) => void): 
   });
   let start: { x: number; y: number } | null = null;
   target.addEventListener('pointerdown', (e) => {
-    start = { x: e.clientX, y: e.clientY };
+    start = enabled() ? { x: e.clientX, y: e.clientY } : null;
   });
   const end = (e: PointerEvent) => {
     if (!start) return;

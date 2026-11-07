@@ -121,3 +121,27 @@ test('mute toggle is in the header and its state survives reload', async ({ page
   await page.reload();
   await expect(page.locator('.header').getByRole('button', { name: 'Unmute' })).toBeVisible();
 });
+
+test('How to play opens from the header, shows all levels and closes with Escape', async ({ page }) => {
+  await page.goto('/');
+  const help = page.getByRole('dialog', { name: 'How to play' });
+  await expect(help).toBeHidden();
+  await page.locator('.header').getByRole('button', { name: 'How to play' }).click();
+  await expect(help).toBeVisible();
+  await expect(help.getByTestId('help-level').last()).toContainText('Ancient Tree');
+  expect(await help.getByTestId('help-level').count()).toBeGreaterThanOrEqual(9);
+  // Game input is ignored while open.
+  const tilesBefore = await page.locator('.tile').evaluateAll((els) => els.map((e) => (e as HTMLElement).style.cssText).join());
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.locator('.tile')).toHaveCount(tilesBefore.split('--r').length - 1);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('merge-garden:v1')!).state.moves)).toBe(0);
+  await page.keyboard.press('Escape');
+  await expect(help).toBeHidden();
+  // Button is clickable again and the other ways of closing work.
+  await page.locator('.header').getByRole('button', { name: 'How to play' }).click();
+  await help.getByRole('button', { name: 'Close' }).click();
+  await expect(help).toBeHidden();
+  await page.locator('.header').getByRole('button', { name: 'How to play' }).click();
+  await page.mouse.click(2, 2); // beside the window
+  await expect(help).toBeHidden();
+});
