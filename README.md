@@ -50,4 +50,4 @@ For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwri
 
 Pushing to `main` builds and deploys the game to GitHub Pages via `.github/workflows/deploy.yml`
 (enable *Settings → Pages → Source: GitHub Actions* once). Once enabled the game is available at
-`https://<owner>.github.io/merge-garden/`.
+<https://johnlayz.github.io/merge-garden/>
