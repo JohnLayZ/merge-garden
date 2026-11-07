@@ -40,6 +40,12 @@ ALL DONE
 - CLAUDE.md: Branch nach dem Merge nicht selbst löschen.
 - Stand: lint, 90 Unit-Tests, Build und 6 e2e-Tests grün.
 
+## Änderungsrunde 7 / Paket 6 (fertig)
+- "?"-Button im Kopfbereich öffnet die Anleitung (Overlay, Stufenreihe aus `LEVELS`/`PLANT_SCALE`, fünf Punkte); Schließen per Button/Klick daneben/Escape; Eingaben ignoriert und Timer pausiert, solange offen. Unit- und Playwright-Test.
+- Spawn blendet sanft ein (180 ms, ab Skalierung 0,8); Merge-Pop 150 → 200 ms, 1,12 → 1,14; Sieg-/Game-Over-Overlay blenden in 250 ms ein. Alle Werte in `src/ui/motion.ts`.
+- CLAUDE.md: Deploy-Wartezeit ohne Hintergrund-Überwachung.
+- Stand: lint, 95 Unit-Tests, Build und 7 e2e-Tests grün.
+
 ## Offen
 - Nichts im Backlog.
 

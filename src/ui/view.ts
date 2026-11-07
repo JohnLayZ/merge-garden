@@ -4,7 +4,9 @@ import { SIZE } from '../game/types';
 import soundOnSvg from '../assets/sound-on.svg?raw';
 import soundOffSvg from '../assets/sound-off.svg?raw';
 import { formatTime } from '../game/timer';
-import { PLANTS } from './plants';
+import { LEVELS } from '../levels';
+import { PLANTS, PLANT_SCALE } from './plants';
+import { MOTION, applyMotion } from './motion';
 
 interface Tile {
   el: HTMLElement;
@@ -16,8 +18,11 @@ export interface View {
   /** Show the play time (header and overlay), in ms. */
   setTime(ms: number): void;
   setMuted(muted: boolean): void;
+  /** Show or hide the "How to play" overlay. */
+  setHelpOpen(open: boolean): void;
   boardEl: HTMLElement;
-  buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; mute: HTMLButtonElement };
+  buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; mute: HTMLButtonElement; help: HTMLButtonElement };
+  help: { el: HTMLElement; closeButton: HTMLButtonElement };
   overlay: { el: HTMLElement; button: HTMLButtonElement };
 }
 
@@ -35,6 +40,7 @@ function place(node: HTMLElement, index: number): void {
 
 export function createView(root: HTMLElement): View {
   root.innerHTML = '';
+  applyMotion(document.documentElement);
   const title = el('h1', 'title', 'Merge Garden');
   const scoreVal = el('span', 'box-value', '0');
   const bestVal = el('span', 'box-value', '0');
@@ -49,7 +55,11 @@ export function createView(root: HTMLElement): View {
   timeBox.append(el('span', 'box-label', 'Time'), timeVal);
   const muteBtn = el('button', 'btn icon-btn');
   muteBtn.type = 'button';
-  header.append(title, scoreBox, bestBox, timeBox, muteBtn);
+  const helpBtn = el('button', 'btn icon-btn help-btn', '?');
+  helpBtn.type = 'button';
+  helpBtn.setAttribute('aria-label', 'How to play');
+  helpBtn.title = 'How to play';
+  header.append(title, scoreBox, bestBox, timeBox, helpBtn, muteBtn);
 
   const boardEl = el('div', 'board');
   boardEl.setAttribute('role', 'grid');
@@ -81,6 +91,44 @@ export function createView(root: HTMLElement): View {
   const hint = el('p', 'hint', 'Swipe or use arrow keys / WASD. Merge equal plants!');
   root.append(header, boardWrap, controls, hint);
 
+  // "How to play": fixed full-screen layer above everything; the level row is read from LEVELS.
+  const helpEl = el('div', 'help');
+  helpEl.hidden = true;
+  const helpDialog = el('div', 'help-dialog');
+  helpDialog.setAttribute('role', 'dialog');
+  helpDialog.setAttribute('aria-modal', 'true');
+  helpDialog.setAttribute('aria-labelledby', 'help-title');
+  const helpTitle = el('h2', 'help-title', 'How to play');
+  helpTitle.id = 'help-title';
+  const helpClose = el('button', 'btn help-close', '×');
+  helpClose.type = 'button';
+  helpClose.setAttribute('aria-label', 'Close');
+  const helpTop = el('div', 'help-top');
+  helpTop.append(helpTitle, helpClose);
+  const helpLevels = el('ul', 'help-levels');
+  helpLevels.setAttribute('aria-label', 'Plant stages');
+  LEVELS.forEach((lvl, i) => {
+    const item = el('li', 'help-level');
+    item.setAttribute('data-testid', 'help-level');
+    const plant = el('span', 'help-plant');
+    plant.style.setProperty('--tile-bg', lvl.color);
+    plant.innerHTML = `<span class="plant" style="--s:${PLANT_SCALE[i]}">${lvl.svg}</span>`;
+    item.append(plant, el('span', 'help-level-name', lvl.name));
+    helpLevels.append(item);
+  });
+  const winName = LEVELS[LEVELS.length - 1].name;
+  const helpList = el('ul', 'help-list');
+  for (const line of [
+    'Swipe, or use the arrow keys / WASD, to slide all plants.',
+    'Two equal plants merge into the next stage.',
+    'After every valid move, new seeds appear.',
+    `Goal: grow an ${winName} to win.`,
+    'Game over when nothing can move or merge. Undo takes back exactly one move, but not after a win or game over.',
+  ]) helpList.append(el('li', '', line));
+  helpDialog.append(helpTop, helpLevels, helpList);
+  helpEl.append(helpDialog);
+  root.append(helpEl);
+
   const tiles: (Tile | null)[] = new Array(SIZE * SIZE).fill(null);
 
   function paint(tile: Tile, level: number): void {
@@ -91,7 +139,6 @@ export function createView(root: HTMLElement): View {
     tile.el.setAttribute('aria-label', PLANTS[level].name);
   }
 
-  const SLIDE_MS = 130;
   function pop(tile: Tile): void {
     tile.el.classList.remove('pop');
     void tile.el.offsetWidth; // restart animation
@@ -110,7 +157,7 @@ export function createView(root: HTMLElement): View {
         const survivor = next[m.to];
         const gone = tile;
         gone.el.style.zIndex = '0';
-        setTimeout(() => gone.el.remove(), SLIDE_MS);
+        setTimeout(() => gone.el.remove(), MOTION.slideMs);
         if (survivor) {
           paint(survivor, survivor.level + 1);
           pop(survivor);
@@ -164,12 +211,18 @@ export function createView(root: HTMLElement): View {
     muteBtn.title = muted ? 'Unmute' : 'Mute';
   }
 
+  function setHelpOpen(open: boolean): void {
+    helpEl.hidden = !open;
+    if (open) helpClose.focus();
+  }
   return {
     render,
+    setHelpOpen,
     setTime,
     setMuted,
     boardEl,
-    buttons: { newGame: newBtn, undo: undoBtn, mute: muteBtn },
+    buttons: { newGame: newBtn, undo: undoBtn, mute: muteBtn, help: helpBtn },
+    help: { el: helpEl, closeButton: helpClose },
     overlay: { el: overlayEl, button: overlayBtn },
   };
 }

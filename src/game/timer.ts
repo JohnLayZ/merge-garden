@@ -26,9 +26,17 @@ export function pauseTimer(t: TimerState, now: number): TimerState {
   return t.runningSince === null ? t : { elapsedMs: elapsedAt(t, now), runningSince: null };
 }
 
-/** The timer runs from the first valid move until win/loss, and only while the page is visible. */
-export function shouldRun(state: Pick<GameState, 'status' | 'moves'>, visible: boolean): boolean {
-  return visible && state.status === 'playing' && state.moves > 0;
+/**
+ * The timer runs from the first valid move until win/loss, and only while the page is visible
+ * and the "How to play" overlay is closed.
+ */
+export function shouldRun(state: Pick<GameState, 'status' | 'moves'>, visible: boolean, helpOpen = false): boolean {
+  return visible && !helpOpen && state.status === 'playing' && state.moves > 0;
+}
+
+/** Game input (swipe, keys) is ignored while the "How to play" overlay is open. */
+export function inputEnabled(helpOpen: boolean): boolean {
+  return !helpOpen;
 }
 
 /** m:ss, or h:mm:ss from one hour on. */

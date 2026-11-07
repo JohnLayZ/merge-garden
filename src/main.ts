@@ -4,7 +4,7 @@ import { applyMove, newGame, undo } from './game/state';
 import type { TileMove } from './game/board';
 import type { Direction, GameState } from './game/types';
 import { loadGame, saveGame } from './storage';
-import { elapsedAt, idleTimer, pauseTimer, resumeTimer, shouldRun, type TimerState } from './game/timer';
+import { elapsedAt, idleTimer, pauseTimer, resumeTimer, inputEnabled, shouldRun, type TimerState } from './game/timer';
 import { createSound } from './audio/sound';
 import { bindInput } from './ui/input';
 import { createView } from './ui/view';
@@ -37,13 +37,14 @@ let best = saved?.best ?? 0;
 
 // Play time: only active time is summed up and saved with the game (never a difference between page loads).
 const now = () => performance.now();
+let helpOpen = false;
 let timer: TimerState = idleTimer(state.playMs);
 const visible = () => document.visibilityState !== 'hidden';
 
 /** Start/stop the timer to match the game state and visibility; stores the sum in the state. */
 function syncTimer(): void {
   const t = now();
-  timer = shouldRun(state, visible()) ? resumeTimer(timer, t) : pauseTimer(timer, t);
+  timer = shouldRun(state, visible(), helpOpen) ? resumeTimer(timer, t) : pauseTimer(timer, t);
   state = { ...state, playMs: Math.floor(elapsedAt(timer, t)) };
   view.setTime(state.playMs);
 }
@@ -74,6 +75,7 @@ window.addEventListener('pagehide', () => {
 });
 
 function move(dir: Direction): void {
+  if (!inputEnabled(helpOpen)) return;
   const next = applyMove(state, dir);
   if (next === state) return;
   const tiles = moveBoard(state.board, dir).tiles;
@@ -89,5 +91,21 @@ const restart = () => {
 view.buttons.newGame.addEventListener('click', restart);
 view.overlay.button.addEventListener('click', restart);
 
-bindInput(view.boardEl, move);
+function setHelp(open: boolean): void {
+  if (open === helpOpen) return;
+  helpOpen = open;
+  view.setHelpOpen(open);
+  syncTimer(); // pauses while open, continues on close
+  if (!open) view.buttons.help.focus();
+}
+view.buttons.help.addEventListener('click', () => setHelp(true));
+view.help.closeButton.addEventListener('click', () => setHelp(false));
+view.help.el.addEventListener('click', (e) => {
+  if (e.target === view.help.el) setHelp(false); // click beside the window
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && helpOpen) setHelp(false);
+});
+
+bindInput(view.boardEl, move, () => inputEnabled(helpOpen));
 update(state);
