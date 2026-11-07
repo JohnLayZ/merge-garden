@@ -6,6 +6,7 @@ import soundOffSvg from '../assets/sound-off.svg?raw';
 import { formatTime } from '../game/timer';
 import { LEVELS } from '../levels';
 import { PLANTS, PLANT_SCALE } from './plants';
+import { MOTION, applyMotion } from './motion';
 
 interface Tile {
   el: HTMLElement;
@@ -39,6 +40,7 @@ function place(node: HTMLElement, index: number): void {
 
 export function createView(root: HTMLElement): View {
   root.innerHTML = '';
+  applyMotion(document.documentElement);
   const title = el('h1', 'title', 'Merge Garden');
   const scoreVal = el('span', 'box-value', '0');
   const bestVal = el('span', 'box-value', '0');
@@ -137,7 +139,6 @@ export function createView(root: HTMLElement): View {
     tile.el.setAttribute('aria-label', PLANTS[level].name);
   }
 
-  const SLIDE_MS = 130;
   function pop(tile: Tile): void {
     tile.el.classList.remove('pop');
     void tile.el.offsetWidth; // restart animation
@@ -156,7 +157,7 @@ export function createView(root: HTMLElement): View {
         const survivor = next[m.to];
         const gone = tile;
         gone.el.style.zIndex = '0';
-        setTimeout(() => gone.el.remove(), SLIDE_MS);
+        setTimeout(() => gone.el.remove(), MOTION.slideMs);
         if (survivor) {
           paint(survivor, survivor.level + 1);
           pop(survivor);
