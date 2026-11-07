@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { slideRow } from '../src/game/row';
+import { MAX_LEVEL } from '../src/game/types';
 
 describe('slideRow', () => {
   it('merges a pair', () => expect(slideRow([1, 1, 0, 0]).row).toEqual([2, 0, 0, 0]));
@@ -18,7 +19,7 @@ describe('slideRow', () => {
     expect(r.score).toBe(8 + 16);
     expect(r.merges).toBe(2);
   });
-  it('never merges level 7', () => expect(slideRow([7, 7, 0, 0]).row).toEqual([7, 7, 0, 0]));
+  it('never merges the top level', () => expect(slideRow([MAX_LEVEL, MAX_LEVEL, 0, 0]).row).toEqual([MAX_LEVEL, MAX_LEVEL, 0, 0]));
   it('reports moved', () => {
     expect(slideRow([0, 1, 0, 0]).moved).toBe(true);
     expect(slideRow([1, 0, 0, 0]).moved).toBe(false);

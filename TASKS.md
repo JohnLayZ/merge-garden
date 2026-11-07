@@ -25,5 +25,12 @@
 - [x] T24: Sounds lauter (MASTER_VOLUME, Limiter), Tests
 - [x] T25: Branch-Löschungsregel in CLAUDE.md, README-Link
 - [x] T26: App-Icon, Favicon, Manifest, theme-color, Test
+- [x] T27: Gießkanne komplett entfernt, Spielstand-Version (Paket 5)
+- [x] T28: 9 Pflanzenstufen mit zentraler Stufenliste `src/levels.ts`, neue SVGs Young Tree und Old Tree
+- [x] T29: Sieg an die letzte Stufe der Liste gebunden (Stufe 9)
+- [x] T30: Optik geprüft (Screenshots 520/360 px, laufendes Spiel), nachgebessert
+- [x] T31: Längenabschätzung `dev/simulate.ts` (`npm run simulate`)
+- [x] T32: Sounds für 9 Stufen aus der Stufenliste abgeleitet, Test
+- [x] T33: Branch-Regel in CLAUDE.md korrigiert
 
 ## Ideen (nicht umsetzen, nur sammeln)

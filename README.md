@@ -1,6 +1,6 @@
 # Merge Garden 🌱
 
-A calm browser puzzle in the spirit of slide-and-merge games, but with plants instead of numbers and a twist: the **Watering Can**.
+A calm browser puzzle in the spirit of slide-and-merge games, but with plants instead of numbers.
 
 Built with TypeScript and Vite (no UI framework). Everything runs offline in the browser.
 
@@ -19,6 +19,7 @@ npm run preview    # serve the production build
 npm run lint       # ESLint (also guards the purity of src/game)
 npm test           # vitest unit tests for the game logic and storage
 npm run test:e2e   # Playwright UI tests (builds and serves the app itself)
+npm run simulate   # dev only: plays 500 games with a simple strategy and prints how long games last
 ```
 
 For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwright install chromium` once.
@@ -27,14 +28,13 @@ For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwri
 
 - The board is 4×4. Swipe, or use the arrow keys / WASD, to slide all plants in one direction.
 - Two equal plants that meet merge into the next stage (each plant merges at most once per move).
-  Stages: Seed → Sprout → Seedling → Bush → Flower → Tree → Ancient Tree (own SVG artwork in `src/assets/plants/`, growing in size with every stage).
+  Nine stages: Seed → Sprout → Seedling → Bush → Flower → Young Tree → Tree → Old Tree → Ancient Tree (own SVG artwork in `src/assets/plants/`, growing in size with every stage). All level data lives in one list, `LEVELS` in `src/levels.ts`; the last entry is the winning stage.
 - If a move changed something, 1–2 new seeds appear. A move that changes nothing doesn't count.
-- **Watering Can:** every 10 merges you earn one can (max 3). Press *Watering Can*, then click a plant to grow it one stage — it costs no move. Ancient Trees can't be watered (the can is kept).
 - Score: merging into stage *n* gives 2ⁿ points.
-- You win when the first Ancient Tree appears and the game ends — no more moves, cans or undo (also when the tree is grown with the Watering Can). You lose when the board is full, nothing can merge and no can can help.
+- You win when the first Ancient Tree (stage 9, the last one) appears and the game ends — no more moves or undo). You lose when the board is full and nothing can merge any more.
 - The header shows the play time (m:ss / h:mm:ss). It starts with your first valid move, only counts while the page is visible, stops at win/game over (the overlay shows the final time) and continues after a reload.
-- Soft sounds (Web Audio, no files): merging plays a pentatonic note that rises with the plant stage, plus short sounds for the Watering Can, a win and game over. Use the speaker button in the header to mute; the choice is remembered. Audio starts after your first click/key press.
-- *Undo* reverts exactly one step (not after a win or game over). Your game and best score are saved in `localStorage` and survive a reload.
+- Soft sounds (Web Audio, no files): merging plays a pentatonic note that rises with the plant stage, plus short sounds for a win and game over. Use the speaker button in the header to mute; the choice is remembered. Audio starts after your first click/key press.
+- *Undo* reverts exactly one step (not after a win or game over). Your game and best score are saved in `localStorage` and survive a reload. A save from an older game version is discarded (a new game starts), the best score is kept.
 
 ## Project layout
 

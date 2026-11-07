@@ -1,7 +1,6 @@
 import type { TileMove } from '../game/board';
 import type { GameState } from '../game/types';
-import { SIZE, MAX_CANS } from '../game/types';
-import dropSvg from '../assets/drop.svg?raw';
+import { SIZE } from '../game/types';
 import soundOnSvg from '../assets/sound-on.svg?raw';
 import soundOffSvg from '../assets/sound-off.svg?raw';
 import { formatTime } from '../game/timer';
@@ -14,13 +13,11 @@ interface Tile {
 
 export interface View {
   render(state: GameState, best: number, moves?: TileMove[]): void;
-  onCellClick(handler: (index: number) => void): void;
-  setWateringMode(on: boolean): void;
   /** Show the play time (header and overlay), in ms. */
   setTime(ms: number): void;
   setMuted(muted: boolean): void;
   boardEl: HTMLElement;
-  buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; can: HTMLButtonElement; mute: HTMLButtonElement };
+  buttons: { newGame: HTMLButtonElement; undo: HTMLButtonElement; mute: HTMLButtonElement };
   overlay: { el: HTMLElement; button: HTMLButtonElement };
 }
 
@@ -77,30 +74,19 @@ export function createView(root: HTMLElement): View {
   const boardWrap = el('div', 'board-wrap');
   boardWrap.append(boardEl, overlayEl);
 
-  const canLabel = el('span', 'can-count', '0');
-  const canBtn = el('button', 'btn', '');
-  const drop = el('span', 'drop');
-  drop.innerHTML = dropSvg;
-  canBtn.append(drop, el('span', '', 'Watering Can '), canLabel);
   const undoBtn = el('button', 'btn', 'Undo');
   const newBtn = el('button', 'btn', 'New Game');
   const controls = el('div', 'controls');
-  controls.append(undoBtn, canBtn, newBtn);
+  controls.append(undoBtn, newBtn);
   const hint = el('p', 'hint', 'Swipe or use arrow keys / WASD. Merge equal plants!');
   root.append(header, boardWrap, controls, hint);
 
   const tiles: (Tile | null)[] = new Array(SIZE * SIZE).fill(null);
-  let clickHandler: (i: number) => void = () => {};
-  boardEl.addEventListener('click', (e) => {
-    const rect = tilesLayer.getBoundingClientRect();
-    const col = Math.min(SIZE - 1, Math.max(0, Math.floor(((e.clientX - rect.left) / rect.width) * SIZE)));
-    const row = Math.min(SIZE - 1, Math.max(0, Math.floor(((e.clientY - rect.top) / rect.height) * SIZE)));
-    clickHandler(row * SIZE + col);
-  });
 
   function paint(tile: Tile, level: number): void {
     tile.level = level;
     tile.el.dataset.level = String(level);
+    tile.el.style.setProperty('--tile-bg', PLANTS[level].color);
     tile.el.innerHTML = `<span class="plant" style="--s:${PLANTS[level].scale}">${PLANTS[level].svg}</span>`;
     tile.el.setAttribute('aria-label', PLANTS[level].name);
   }
@@ -140,8 +126,6 @@ export function createView(root: HTMLElement): View {
     if (moves) applyMoves(moves);
     scoreVal.textContent = String(state.score);
     bestVal.textContent = String(best);
-    canLabel.textContent = `${state.cans}/${MAX_CANS}`;
-    canBtn.disabled = state.cans === 0 || state.status !== 'playing';
     undoBtn.disabled = state.prev === null || state.status !== 'playing';
     state.board.forEach((level, i) => {
       const t = tiles[i];
@@ -184,13 +168,8 @@ export function createView(root: HTMLElement): View {
     render,
     setTime,
     setMuted,
-    onCellClick: (h) => (clickHandler = h),
-    setWateringMode: (on) => {
-      boardEl.classList.toggle('watering', on);
-      canBtn.classList.toggle('active', on);
-    },
     boardEl,
-    buttons: { newGame: newBtn, undo: undoBtn, can: canBtn, mute: muteBtn },
+    buttons: { newGame: newBtn, undo: undoBtn, mute: muteBtn },
     overlay: { el: overlayEl, button: overlayBtn },
   };
 }

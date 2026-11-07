@@ -1,3 +1,4 @@
+import { MAX_LEVEL } from '../levels';
 import type { KV } from '../storage';
 
 /**
@@ -5,12 +6,31 @@ import type { KV } from '../storage';
  * Lives outside src/game so the game logic stays pure. The AudioContext is only created
  * by `unlock()`, which is called on the first user action (browser autoplay rules).
  */
-export type SoundEvent = 'merge' | 'water' | 'win' | 'lose';
+export type SoundEvent = 'merge' | 'win' | 'lose';
 
 export const MUTE_KEY = 'merge-garden:muted';
 
-/** C major pentatonic (C4 D4 E4 G4 A4 C5), indexed by the level of the plant created by a merge. */
-export const MERGE_NOTES: Record<number, number> = { 2: 261.63, 3: 293.66, 4: 329.63, 5: 392.0, 6: 440.0, 7: 523.25 };
+/** Merges create levels 2..MAX_LEVEL (a seed, level 1, only ever spawns and makes no sound). */
+const MERGE_LEVELS = Array.from({ length: MAX_LEVEL - 1 }, (_, i) => i + 2);
+
+/**
+ * C major pentatonic (C D E G A, repeating each octave) starting at C4, one note per resulting level
+ * of a merge, derived from the central level list: level 2 = C4 ... level 7 = C5 (as before),
+ * level 8 = D5, level 9 = E5. Higher level = higher note.
+ */
+const PENTATONIC = [0, 2, 4, 7, 9];
+export const MERGE_NOTES: Record<number, number> = Object.fromEntries(
+  MERGE_LEVELS.map((lv, i) => {
+    const semitones = PENTATONIC[i % 5] + 12 * Math.floor(i / 5);
+    return [lv, 261.63 * 2 ** (semitones / 12)];
+  }),
+);
+
+/** Overtones above this frequency (the highest merge overtone before Paket 5, C6) are left out so higher levels never get shriller. */
+export const MAX_PARTIAL_HZ = 1046.5;
+
+/** Gain of a merge note: falls linearly from 1 (level 2) to MERGE_GAIN_MIN (top level); a bit lower than the old curve at 3..7, never louder. */
+export const MERGE_GAIN_MIN = 0.6;
 
 /**
  * Single knob for the overall volume (0..1). Every tone's peak is `gain * MASTER_VOLUME`, all
@@ -23,11 +43,11 @@ const ATTACK = 0.025;
 /** Relative gains per sound (each 0 < g <= 1); ratios between sounds are unchanged since Paket 3. */
 export const GAINS = {
   /** Fundamental gain of a merge note per resulting level: higher notes sound louder to the ear, so they are trimmed. */
-  mergeByLevel: { 2: 1, 3: 0.97, 4: 0.9, 5: 0.85, 6: 0.8, 7: 0.74 } as Record<number, number>,
+  mergeByLevel: Object.fromEntries(
+    MERGE_LEVELS.map((lv) => [lv, 1 - (1 - MERGE_GAIN_MIN) * ((lv - 2) / (MAX_LEVEL - 2))]),
+  ) as Record<number, number>,
   mergeOctave: 0.35,
   mergeFifth: 0.3,
-  waterLow: 0.8,
-  waterHigh: 0.7,
   winNote: 0.9,
   winChord: 0.5,
   lose: 0.7,
@@ -139,19 +159,15 @@ export function createSound({ kv, create = defaultCreate }: SoundOptions): Sound
     try {
       switch (event) {
         case 'merge': {
-          const lv = Math.min(7, Math.max(2, Math.round(level)));
+          const lv = Math.min(MAX_LEVEL, Math.max(2, Math.round(level)));
           const f = MERGE_NOTES[lv];
           const lg = GAINS.mergeByLevel[lv];
           tone(c, f, t, 0.45, lg);
-          // higher level = fuller tone: add soft overtones
-          if (lv >= 4) tone(c, f * 2, t, 0.4, GAINS.mergeOctave * lg);
-          if (lv >= 6) tone(c, f * 1.5, t, 0.5, GAINS.mergeFifth * lg);
+          // higher level = fuller tone: add soft overtones (not above MAX_PARTIAL_HZ: never shriller than before)
+          if (lv >= 4 && f * 2 <= MAX_PARTIAL_HZ) tone(c, f * 2, t, 0.4, GAINS.mergeOctave * lg);
+          if (lv >= 6 && f * 1.5 <= MAX_PARTIAL_HZ) tone(c, f * 1.5, t, 0.5, GAINS.mergeFifth * lg);
           break;
         }
-        case 'water':
-          tone(c, 392.0, t, 0.3, GAINS.waterLow, 'triangle');
-          tone(c, 587.33, t + 0.09, 0.4, GAINS.waterHigh);
-          break;
         case 'win':
           [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(c, f, t + i * 0.14, 0.6, GAINS.winNote));
           tone(c, 523.25, t + 0.56, 1.2, GAINS.winChord);

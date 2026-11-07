@@ -9,8 +9,6 @@
   --gap: 2%;
   --tile: 23.5%;
   --step: 25.5%;
-  --l1: #f1e4d3; --l2: #e3f3c9; --l3: #cdeccb; --l4: #c8e6e0;
-  --l5: #f9d6e2; --l6: #d8eab6; --l7: #b9dfb0;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; background: var(--bg); color: var(--text); }
@@ -44,16 +42,8 @@ body {
   transition: left 130ms ease-out, top 130ms ease-out;
   z-index: 1;
   display: flex; align-items: flex-end; justify-content: center; padding: 4% 3%;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06); background: var(--l1);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06); background: var(--tile-bg, var(--cell));
 }
-.tile[data-level="1"] { background: var(--l1); }
-.tile[data-level="2"] { background: var(--l2); }
-.tile[data-level="3"] { background: var(--l3); }
-.tile[data-level="4"] { background: var(--l4); }
-.tile[data-level="5"] { background: var(--l5); }
-.tile[data-level="6"] { background: var(--l6); }
-.tile[data-level="7"] { background: var(--l7); }
-.board.watering .tile { cursor: pointer; outline: 2px dashed var(--accent); }
 
 .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .btn {
@@ -62,7 +52,7 @@ body {
 }
 .btn:hover:not(:disabled) { background: var(--btn-hover); }
 .btn:disabled { opacity: 0.5; cursor: default; }
-.btn.primary, .btn.active { background: var(--accent); }
+.btn.primary { background: var(--accent); }
 .hint { margin: 0; text-align: center; font-size: 0.85rem; opacity: 0.8; }
 
 .overlay {
@@ -97,9 +87,6 @@ body {
 
 .plant { display: block; width: calc(var(--s) * 100%); aspect-ratio: 1; line-height: 0; }
 .plant svg { display: block; width: 100%; height: 100%; overflow: visible; }
-
-.drop { display: inline-block; width: 1.1em; height: 1.1em; vertical-align: -0.2em; margin-right: 0.3em; }
-.drop svg { width: 100%; height: 100%; display: block; }
 
 .icon-btn { width: 44px; padding: 8px; flex: none; }
 .icon-btn svg { display: block; width: 100%; height: 100%; }
