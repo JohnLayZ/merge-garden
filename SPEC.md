@@ -9,12 +9,12 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - Keine externen Dienste, alles läuft offline
 
 ## Spielregeln
-1. Spielfeld 4x4. Jedes Feld ist leer oder enthält eine Pflanze der Stufe 1–7.
-2. Stufen: 1 Samen, 2 Spross, 3 Setzling, 4 Busch, 5 Blume, 6 Baum, 7 Uralter Baum.
+1. Spielfeld 4x4. Jedes Feld ist leer oder enthält eine Pflanze der Stufe 1–9.
+2. Stufen: 1 Samen (Seed), 2 Spross (Sprout), 3 Setzling (Seedling), 4 Busch (Bush), 5 Blume (Flower), 6 Junger Baum (Young Tree), 7 Baum (Tree), 8 Alter Baum (Old Tree), 9 Uralter Baum (Ancient Tree). Stufen, Namen, SVGs, Feldfarben und Größen stehen an einer einzigen Stelle als Liste (`LEVELS` in `src/levels.ts`); die Stufenzahl (`MAX_LEVEL`) und damit die Siegstufe ergeben sich aus der Länge dieser Liste, nirgends sonst ist eine Stufenzahl hartkodiert.
 3. Ein Zug = Wischen/Pfeiltaste in eine Richtung. Alle Pflanzen gleiten bis zum Rand. Zwei gleiche Pflanzen, die aufeinandertreffen, verschmelzen zur nächsten Stufe (pro Zug höchstens eine Verschmelzung pro Pflanze).
 4. Hat sich nach einem Zug etwas verändert, erscheinen 1–2 neue Samen (Stufe 1) auf zufälligen leeren Feldern. Bewegt sich nichts, ist der Zug ungültig und zählt nicht.
 5. Punkte: Verschmelzung zur Stufe n gibt 2^n Punkte.
-6. Gewonnen: Mit der ersten Pflanze der Siegstufe (Stufe 7, Uralter Baum) ist das Spiel gewonnen und beendet. Danach sind keine Züge oder Undo mehr möglich; es gibt kein Weiterspielen. Der Highscore wird dennoch aktualisiert, und nach Reload bleibt der Gewonnen-Zustand samt Overlay erhalten.
+6. Gewonnen: Sobald die letzte Stufe der Liste (Stufe 9, Uralter Baum) entsteht, ist das Spiel gewonnen und beendet. Danach sind keine Züge oder Undo mehr möglich; es gibt kein Weiterspielen. Der Highscore wird dennoch aktualisiert, und nach Reload bleibt der Gewonnen-Zustand samt Overlay erhalten.
 7. Verloren: Feld voll und keine Verschmelzung mehr möglich.
 
 ## Features
@@ -34,6 +34,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - F14: Eigenes App-Icon (`public/icon.svg`, PNG 192/512), Favicon, Web-App-Manifest (standalone) und `theme-color`; alle Pfade funktionieren mit der Vite-Basis. Kein Service Worker.
 
 ## Akzeptanzkriterien (Beispiele)
+- Zeile `[8,8,0,0]` nach links ergibt `[9,0,0,0]` und gewinnt das Spiel; `[7,7,0,0]` ergibt `[8,0,0,0]` und das Spiel läuft weiter
 - Zeile `[1,1,0,0]` nach links ergibt `[2,0,0,0]`
 - Zeile `[1,1,1,1]` nach links ergibt `[2,2,0,0]`
 - Zeile `[2,1,1,0]` nach links ergibt `[2,2,0,0]`, die neue 2 verschmilzt im selben Zug nicht erneut
@@ -45,9 +46,9 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - Die Spielzeit zählt nur bei sichtbarer Seite, startet mit dem ersten gültigen Zug, ist nach Sieg/Niederlage eingefroren und läuft nach Reload vom gespeicherten Wert weiter
 
 ## Design-Vorgaben
-- Grafik: eigene, einfache SVG-Grafiken je Pflanzenstufe (1 Samen, 2 Spross, 3 Setzling, 4 Busch, 5 Blume, 6 Baum, 7 Uralter Baum) statt Emojis, damit das Spiel auf allen Geräten gleich aussieht. Dateien liegen in `src/assets/plants/` (eigene Dateien im Projekt, keine externen Quellen). Stil: flach, abgerundet, Pastellfüllungen, einheitliche Linienstärke (4) und dunkelgrüne Kontur, kleiner Erdschatten als gemeinsame Grundlinie.
-- Größenverhältnisse: Pflanzen sind im Feld unterschiedlich groß und wachsen mit der Stufe streng monoton: Faktoren (Anteil der Feldgröße) 0.30, 0.40, 0.52, 0.64, 0.76, 0.86, 0.95 (`PLANT_SCALE` in `src/ui/plants.ts`, per Test auf strikte Monotonie geprüft). Alle Pflanzen sind horizontal zentriert und stehen auf einer gemeinsamen Grundlinie am Feldboden.
-- Farben: helle Pastelltöne (Frühlingsstimmung), Hintergrund cremeweiß, Spielfeld in sanftem Hellgrün, Felder in leicht abgesetzten Pastellflächen; pro Pflanzenstufe ein eigener dezenter Pastellton; gute Lesbarkeit (ausreichender Kontrast bei Text)
+- Grafik: eigene, einfache SVG-Grafiken je Pflanzenstufe (1 Samen, 2 Spross, 3 Setzling, 4 Busch, 5 Blume, 6 Junger Baum, 7 Baum, 8 Alter Baum, 9 Uralter Baum) statt Emojis, damit das Spiel auf allen Geräten gleich aussieht. Dateien liegen in `src/assets/plants/` (eigene Dateien im Projekt, keine externen Quellen). Stil: flach, abgerundet, Pastellfüllungen, einheitliche Linienstärke (4) und dunkelgrüne Kontur, kleiner Erdschatten als gemeinsame Grundlinie. Junger Baum: schlanker Stamm mit kleiner, hellerer Krone. Alter Baum: größer und breiter als der Baum, dicker Stamm, dunklere Krone, aber ohne goldene Früchte und Wurzeln (die bleiben dem Uralten Baum vorbehalten).
+- Größenverhältnisse: Pflanzen sind im Feld unterschiedlich groß und wachsen mit der Stufe streng monoton: Faktoren (Anteil der Feldgröße) 0.30, 0.38, 0.46, 0.54, 0.62, 0.70, 0.80, 0.88, 0.95 (`scale` in `LEVELS`, als `PLANT_SCALE` in `src/ui/plants.ts` bereitgestellt; per Test auf strikte Monotonie und auf Anzahl = Stufenzahl geprüft). Alle Pflanzen sind horizontal zentriert und stehen auf einer gemeinsamen Grundlinie am Feldboden.
+- Farben: helle Pastelltöne (Frühlingsstimmung), Hintergrund cremeweiß, Spielfeld in sanftem Hellgrün, Felder in leicht abgesetzten Pastellflächen; pro Pflanzenstufe ein eigener dezenter Pastellton (`color` in `LEVELS`); gute Lesbarkeit (ausreichender Kontrast bei Text)
 - Animationen laufen IMMER, unabhängig von `prefers-reduced-motion` oder System-/Browsereinstellungen; keine Abfrage dieser Einstellung im CSS/JS (bewusste Entscheidung, nicht wieder einbauen)
 - Gefühl: ruhig und entspannt; Tiles gleiten sanft (ca. 120–150 ms), Verschmelzen mit dezentem Pop (leichtes Skalieren), keine Partikel, kein Wackeln; Sounds nur leise und dezent (siehe F13)
 - Schrift: eine abgerundete, gut lesbare System- oder Web-Safe-Schrift
