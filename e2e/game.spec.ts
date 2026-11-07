@@ -5,7 +5,7 @@ async function seedNearlyWon(page: Page, extra: Record<string, unknown> = {}) {
   await page.addInitScript((patch) => {
     if (sessionStorage.getItem('seeded')) return;
     sessionStorage.setItem('seeded', '1');
-    const state = { board: [6, 6, ...new Array(14).fill(0)], score: 0, status: 'playing', moves: 3,
+    const state = { board: [8, 8, ...new Array(14).fill(0)], score: 0, status: 'playing', moves: 3,
       rng: 12345, seed: 1, playMs: 0, prev: null, ...patch };
     localStorage.setItem('merge-garden:v1', JSON.stringify({ version: 2, state, best: 0 }));
   }, extra);
@@ -47,8 +47,8 @@ test('win overlay sits on top and its New Game button is clickable', async ({ pa
   const overlay = page.locator('.overlay');
   await expect(overlay).toBeVisible();
   await expect(overlay).toContainText('You win!');
-  await expect(overlay).toContainText('Score: 128');
-  await expect(overlay).toContainText('Best: 128');
+  await expect(overlay).toContainText('Score: 512');
+  await expect(overlay).toContainText('Best: 512');
   await expect(overlay.getByRole('button')).toHaveCount(1);
   await expect(page.getByText('Keep playing')).toHaveCount(0);
   // The overlay must be the topmost element at the centre of the board.

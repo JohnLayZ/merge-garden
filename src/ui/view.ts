@@ -86,6 +86,7 @@ export function createView(root: HTMLElement): View {
   function paint(tile: Tile, level: number): void {
     tile.level = level;
     tile.el.dataset.level = String(level);
+    tile.el.style.setProperty('--tile-bg', PLANTS[level].color);
     tile.el.innerHTML = `<span class="plant" style="--s:${PLANTS[level].scale}">${PLANTS[level].svg}</span>`;
     tile.el.setAttribute('aria-label', PLANTS[level].name);
   }

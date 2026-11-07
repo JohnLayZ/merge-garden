@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyMove, newGame, undo } from '../src/game/state';
+import { MAX_LEVEL } from '../src/game/types';
 
 describe('undo', () => {
   it('does nothing on a fresh game', () => {
@@ -26,7 +27,7 @@ describe('undo', () => {
     expect(b.board).toEqual(a.board);
   });
   it('is locked after a win and after game over', () => {
-    const won = applyMove({ ...newGame(1), board: [6, 6, ...new Array(14).fill(0)] }, 'left');
+    const won = applyMove({ ...newGame(1), board: [MAX_LEVEL - 1, MAX_LEVEL - 1, ...new Array(14).fill(0)] }, 'left');
     expect(won.status).toBe('won');
     expect(undo(won)).toBe(won);
     const lost = applyMove({ ...newGame(1), board: [1, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 0, 2, 1, 2] }, 'left');

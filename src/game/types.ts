@@ -1,8 +1,11 @@
+import { MAX_LEVEL } from '../levels';
+
 export const SIZE = 4;
-export const MAX_LEVEL = 7;
+/** Winning level = last entry of the central level list (src/levels.ts). */
+export { MAX_LEVEL };
 
 export type Direction = 'left' | 'right' | 'up' | 'down';
-/** 16 cells, row-major. 0 = empty, 1..7 = plant level. */
+/** 16 cells, row-major. 0 = empty, 1..MAX_LEVEL = plant level. */
 export type Board = number[];
 export type Status = 'playing' | 'won' | 'lost';
 
