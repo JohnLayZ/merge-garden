@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { MERGE_NOTES, createSound, type AudioCtxLike } from '../src/audio/sound';
+import { GAINS, LIMITER, MASTER_VOLUME, MERGE_NOTES, createSound, type AudioCtxLike } from '../src/audio/sound';
 import type { KV } from '../src/storage';
 
 const fakeKv = (): KV & { data: Map<string, string> } => {
@@ -10,6 +10,9 @@ const fakeKv = (): KV & { data: Map<string, string> } => {
 function fakeCtx() {
   const osc: { type: string; freq: number }[] = [];
   const peaks: number[] = [];
+  const gains: { connectedTo: unknown[] }[] = [];
+  const limiter: { connectedTo: unknown[]; threshold: { value: number } } = { connectedTo: [], threshold: { value: 0 } };
+  const destination = {};
   const param = (onSet?: (v: number) => void) => ({
     value: 0,
     setValueAtTime: (v: number) => onSet?.(v),
@@ -19,16 +22,31 @@ function fakeCtx() {
   const ctx: AudioCtxLike = {
     currentTime: 0,
     state: 'suspended',
-    destination: {},
+    destination,
     resume: () => Promise.resolve(),
-    createGain: () => ({ gain: param((v) => peaks.push(v)), connect: () => ({}) }),
+    createGain: () => {
+      const g = { connectedTo: [] as unknown[], gain: param((v) => peaks.push(v)), connect: (n: unknown) => (g.connectedTo.push(n), {}) };
+      gains.push(g);
+      return g;
+    },
+    createDynamicsCompressor: () => {
+      const p = () => ({ ...param(), value: 0 });
+      return Object.assign(limiter, {
+        threshold: Object.assign(p(), limiter.threshold),
+        knee: p(),
+        ratio: p(),
+        attack: p(),
+        release: p(),
+        connect: (n: unknown) => (limiter.connectedTo.push(n), {}),
+      });
+    },
     createOscillator: () => {
       const o = { type: '', frequency: param(), connect: () => ({}), start: () => {}, stop: () => {} };
       osc.push(o as never);
       return o as never;
     },
   };
-  return { ctx, osc, peaks };
+  return { ctx, osc, peaks, gains, limiter, destination };
 }
 
 describe('sound', () => {
@@ -67,11 +85,74 @@ describe('sound', () => {
     s.unlock();
     for (const e of ['merge', 'water', 'win', 'lose'] as const) s.play(e, 4);
     expect(f.osc.every((o) => o.type === 'sine' || o.type === 'triangle')).toBe(true);
-    expect(Math.max(...f.peaks)).toBeLessThanOrEqual(0.2);
+    expect(Math.max(...f.peaks)).toBeLessThanOrEqual(MASTER_VOLUME);
   });
   it('survives storage and audio failures', () => {
     const bad: KV = { getItem: () => { throw new Error('x'); }, setItem: () => { throw new Error('x'); } };
     const s = createSound({ kv: bad, create: () => { throw new Error('no audio'); } });
     expect(() => { s.unlock(); s.play('merge', 2); s.setMuted(true); }).not.toThrow();
+  });
+
+  describe('volume', () => {
+    const all = ['merge', 'water', 'win', 'lose'] as const;
+    const playAll = (f: ReturnType<typeof fakeCtx>) => {
+      const s = createSound({ kv: fakeKv(), create: () => f.ctx });
+      s.unlock();
+      for (const lv of [2, 3, 4, 5, 6, 7]) s.play('merge', lv);
+      s.play('water');
+      s.play('win');
+      s.play('lose');
+    };
+    it('has a MASTER_VOLUME in a sane range', () => {
+      expect(MASTER_VOLUME).toBeGreaterThan(0.12);
+      expect(MASTER_VOLUME).toBeLessThanOrEqual(1);
+    });
+    it('keeps every relative gain in (0, 1]', () => {
+      const values = [
+        ...Object.values(GAINS.mergeByLevel),
+        ...Object.entries(GAINS)
+          .filter(([, v]) => typeof v === 'number')
+          .map(([, v]) => v as number),
+      ];
+      expect(values.length).toBeGreaterThan(8);
+      for (const v of values) {
+        expect(v).toBeGreaterThan(0);
+        expect(v).toBeLessThanOrEqual(1);
+      }
+      // higher merge notes are trimmed, never louder than lower ones
+      for (let lv = 3; lv <= 7; lv++) expect(GAINS.mergeByLevel[lv]).toBeLessThanOrEqual(GAINS.mergeByLevel[lv - 1]);
+    });
+    it('scales every played gain by MASTER_VOLUME and never exceeds 1', () => {
+      const f = fakeCtx();
+      playAll(f);
+      const real = f.peaks.filter((v) => v > 0.001);
+      expect(real.length).toBeGreaterThan(10);
+      for (const v of real) {
+        expect(v).toBeLessThanOrEqual(MASTER_VOLUME + 1e-9);
+        expect(v).toBeLessThanOrEqual(1);
+        // each peak is relative gain * MASTER_VOLUME
+        expect(v / MASTER_VOLUME).toBeLessThanOrEqual(1 + 1e-9);
+      }
+      expect(Math.max(...real)).toBeCloseTo(MASTER_VOLUME, 9);
+    });
+    it('routes all tones through the limiter, never straight to the destination', () => {
+      const f = fakeCtx();
+      playAll(f);
+      expect(f.gains.length).toBeGreaterThan(10);
+      for (const g of f.gains) expect(g.connectedTo).toEqual([f.limiter]);
+      expect(f.limiter.connectedTo).toEqual([f.destination]);
+      expect(f.limiter.threshold.value).toBe(LIMITER.threshold);
+    });
+    it('mute silences every sound event', () => {
+      const f = fakeCtx();
+      const s = createSound({ kv: fakeKv(), create: () => f.ctx });
+      s.unlock();
+      s.setMuted(true);
+      const before = f.gains.length;
+      for (const e of all) s.play(e, 5);
+      expect(f.osc.length).toBe(0);
+      expect(f.gains.length).toBe(before);
+      expect(f.peaks.length).toBe(0);
+    });
   });
 });
