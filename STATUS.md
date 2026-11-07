@@ -46,6 +46,11 @@ ALL DONE
 - CLAUDE.md: Deploy-Wartezeit ohne Hintergrund-Überwachung.
 - Stand: lint, 95 Unit-Tests, Build und 7 e2e-Tests grün.
 
+## Änderungsrunde 8 / Paket 7 (fertig)
+- Nur Entwürfe, Spiel unverändert: 11 neue Pflanzen-SVGs in `src/assets/plants-v2/` (nicht im Spiel verwendet) und Dev-Vorschau `dev/plants-v2.html` (nicht im Build). Screenshots in `docs/vorschau/` (520 px, 360 px, Spielfeld 360 px). Nachbesserungen in DECISIONS.md.
+- Wartet auf Freigabe des Auftraggebers, bevor die Entwürfe (11 Stufen) ins Spiel eingebaut werden.
+- Stand: lint, 95 Unit-Tests, Build grün.
+
 ## Offen
 - Nichts im Backlog.
 
