@@ -19,6 +19,7 @@ npm run preview    # serve the production build
 npm run lint       # ESLint (also guards the purity of src/game)
 npm test           # vitest unit tests for the game logic and storage
 npm run test:e2e   # Playwright UI tests (builds and serves the app itself)
+npm run simulate   # dev only: plays 500 games with a simple strategy and prints how long games last
 ```
 
 For the e2e tests Playwright needs a Chromium; if it is missing run `npx playwright install chromium` once.
