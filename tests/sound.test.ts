@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { GAINS, LIMITER, MASTER_VOLUME, MERGE_NOTES, createSound, type AudioCtxLike } from '../src/audio/sound';
+import { MAX_LEVEL } from '../src/levels';
+import { GAINS, LIMITER, MASTER_VOLUME, MAX_PARTIAL_HZ, MERGE_NOTES, createSound, type AudioCtxLike } from '../src/audio/sound';
 import type { KV } from '../src/storage';
 
 const fakeKv = (): KV & { data: Map<string, string> } => {
@@ -80,7 +81,7 @@ describe('sound', () => {
   });
   it('merge notes rise with the plant level and stay soft', () => {
     const levels = Object.keys(MERGE_NOTES).map(Number).sort((a, b) => a - b);
-    expect(levels).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(levels).toEqual(Array.from({ length: MAX_LEVEL - 1 }, (_, i) => i + 2));
     for (let i = 1; i < levels.length; i++) expect(MERGE_NOTES[levels[i]]).toBeGreaterThan(MERGE_NOTES[levels[i - 1]]);
     const f = fakeCtx();
     const s = createSound({ kv: fakeKv(), create: () => f.ctx });
@@ -100,10 +101,59 @@ describe('sound', () => {
     const playAll = (f: ReturnType<typeof fakeCtx>) => {
       const s = createSound({ kv: fakeKv(), create: () => f.ctx });
       s.unlock();
-      for (const lv of [2, 3, 4, 5, 6, 7]) s.play('merge', lv);
+      for (let lv = 2; lv <= MAX_LEVEL; lv++) s.play('merge', lv);
       s.play('win');
       s.play('lose');
     };
+    it('has a note and a gain between 0.6 and 1 for every merge level of the list, falling with the level', () => {
+      // levels 2..MAX_LEVEL are created by merges; level 1 (seed) only spawns and has no sound
+      for (let lv = 2; lv <= MAX_LEVEL; lv++) {
+        expect(MERGE_NOTES[lv]).toBeGreaterThan(0);
+        expect(GAINS.mergeByLevel[lv]).toBeGreaterThanOrEqual(0.6);
+        expect(GAINS.mergeByLevel[lv]).toBeLessThanOrEqual(1);
+        if (lv > 2) {
+          expect(MERGE_NOTES[lv]).toBeGreaterThan(MERGE_NOTES[lv - 1]);
+          expect(GAINS.mergeByLevel[lv]).toBeLessThan(GAINS.mergeByLevel[lv - 1]);
+        }
+      }
+      expect(GAINS.mergeByLevel[2]).toBe(1);
+      expect(GAINS.mergeByLevel[MAX_LEVEL]).toBeCloseTo(0.6, 9);
+    });
+    it('is not louder or shriller than before for any level, and never above the limiter ceiling', () => {
+      // old curve (Paket 4) for levels 2..7; the new curve is at most as loud
+      const old: Record<number, number> = { 2: 1, 3: 0.97, 4: 0.9, 5: 0.85, 6: 0.8, 7: 0.74 };
+      for (const [lv, g] of Object.entries(old)) expect(GAINS.mergeByLevel[Number(lv)]).toBeLessThanOrEqual(g);
+      expect(MERGE_NOTES[7]).toBeCloseTo(523.25, 1);
+      for (let lv = 2; lv <= MAX_LEVEL; lv++) {
+        const f = fakeCtx();
+        const s = createSound({ kv: fakeKv(), create: () => f.ctx });
+        s.unlock();
+        s.play('merge', lv);
+        const real = f.peaks.filter((v) => v > 0.001);
+        expect(real.length).toBeGreaterThan(0);
+        for (const v of real) expect(v).toBeLessThanOrEqual(MASTER_VOLUME + 1e-9); // limiter ceiling = MASTER_VOLUME
+        for (const g of f.gains) expect(g.connectedTo).toEqual([f.limiter]); // every tone goes through the limiter
+      }
+    });
+    it('adds no overtone above MAX_PARTIAL_HZ', () => {
+      for (let lv = 2; lv <= MAX_LEVEL; lv++) {
+        const f = fakeCtx();
+        const hz: number[] = [];
+        const origOsc = f.ctx.createOscillator;
+        f.ctx.createOscillator = () => {
+          const o = origOsc();
+          const setAt = o.frequency.setValueAtTime;
+          o.frequency.setValueAtTime = (v: number, t: number) => (hz.push(v), setAt(v, t));
+          return o;
+        };
+        const s = createSound({ kv: fakeKv(), create: () => f.ctx });
+        s.unlock();
+        s.play('merge', lv);
+        expect(hz[0]).toBeCloseTo(MERGE_NOTES[lv], 6);
+        for (const v of hz.slice(1)) expect(v).toBeLessThanOrEqual(MAX_PARTIAL_HZ);
+        expect(Math.max(...hz)).toBeLessThanOrEqual(Math.max(MAX_PARTIAL_HZ, MERGE_NOTES[lv]));
+      }
+    });
     it('has a MASTER_VOLUME in a sane range', () => {
       expect(MASTER_VOLUME).toBeGreaterThan(0.12);
       expect(MASTER_VOLUME).toBeLessThanOrEqual(1);
@@ -121,7 +171,7 @@ describe('sound', () => {
         expect(v).toBeLessThanOrEqual(1);
       }
       // higher merge notes are trimmed, never louder than lower ones
-      for (let lv = 3; lv <= 7; lv++) expect(GAINS.mergeByLevel[lv]).toBeLessThanOrEqual(GAINS.mergeByLevel[lv - 1]);
+      for (let lv = 3; lv <= MAX_LEVEL; lv++) expect(GAINS.mergeByLevel[lv]).toBeLessThanOrEqual(GAINS.mergeByLevel[lv - 1]);
     });
     it('scales every played gain by MASTER_VOLUME and never exceeds 1', () => {
       const f = fakeCtx();
