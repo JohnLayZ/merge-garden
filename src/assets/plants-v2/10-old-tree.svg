@@ -10,7 +10,7 @@
   <path d="M18 46 C20 54 30 60 40 60 C34 52 28 48 18 46 Z" fill="#ec9a45" stroke="none"/>
   <path d="M10 42 C2 32 8 20 22 22" />
   <path d="M30 20 C36 14 44 14 48 18" stroke="#fde9a8" stroke-width="3"/>
-  <path d="M22 38 C28 34 34 36 36 40" stroke="#c97a2e" stroke-width="3"/>
-  <path d="M56 40 C62 36 70 38 72 42" stroke="#c97a2e" stroke-width="3"/>
+  <path d="M20 40 L28 34 M34 44 L42 38" stroke="#c97a2e" stroke-width="3"/>
+  <path d="M58 44 L66 38 M72 50 L80 44" stroke="#c97a2e" stroke-width="3"/>
   <path d="M82 70 C86 66 90 68 90 72 C86 74 82 74 82 70 Z" fill="#ec9a45" stroke-width="2.5"/>
 </svg>
