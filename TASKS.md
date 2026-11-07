@@ -22,5 +22,8 @@
 - [x] T21: Spielzeit-Anzeige (reine Timer-Logik, Speicherung, Header)
 - [x] T22: Spielzeit in Sieg- und Game-Over-Overlay
 - [x] T23: Sounds per Web Audio mit Stumm-Schalter
+- [x] T24: Sounds lauter (MASTER_VOLUME, Limiter), Tests
+- [x] T25: Branch-Löschungsregel in CLAUDE.md, README-Link
+- [x] T26: App-Icon, Favicon, Manifest, theme-color, Test
 
 ## Ideen (nicht umsetzen, nur sammeln)

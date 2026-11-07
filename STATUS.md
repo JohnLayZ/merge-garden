@@ -24,6 +24,12 @@ ALL DONE
 - CLAUDE.md: Regeln für Auftragsdokumentation (`docs/auftraege/`) und Release-Ablauf (PR, Merge, Deploy-Prüfung).
 - Stand: lint, 80 Unit-Tests, Build und 6 e2e-Tests grün.
 
+## Änderungsrunde 5 / Paket 4 (fertig)
+- Sounds lauter: `MASTER_VOLUME` 0,12 → 0,30 (2,5×), Limiter (DynamicsCompressor) am Ausgang, Merge-Gain nach Stufe angeglichen (1,0 → 0,74), Verhältnisse der Sounds unverändert. Tests für Gains ≤ 1, Master/Limiter-Routing und Stumm-Schalter. Werte in DECISIONS.md.
+- CLAUDE.md: Branch-Löschung per GitHub-Werkzeug. README: echte Spiel-Adresse.
+- Icon (SVG + PNG 192/512, Erzeugung in `dev/make-icons.mjs`), Favicon, Manifest, theme-color; Test prüft `dist/`.
+- Stand: lint, Unit-Tests, Build grün.
+
 ## Offen
 - Nichts im Backlog.
 
