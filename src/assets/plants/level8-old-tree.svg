@@ -3,10 +3,10 @@
   <path d="M36 94 C42 88 41 78 40 64 L40 50 L60 50 L60 64 C59 78 58 88 64 94 Z" fill="#c4966c"/>
   <path d="M46 62 C48 72 48 82 46 90" stroke="#9c7450" stroke-width="3"/>
   <path d="M54 66 C53 74 53 80 55 86" stroke="#9c7450" stroke-width="3"/>
-  <path d="M50 6 C64 2 78 8 80 20 C94 20 98 36 90 46 C92 60 80 66 68 62 C60 68 40 68 32 62 C20 66 8 60 10 46 C2 36 6 20 20 20 C22 8 36 2 50 6 Z" fill="#6bb88a"/>
-  <path d="M14 52 C32 62 68 62 86 52" stroke="#4b9570" stroke-width="3"/>
+  <path d="M50 6 C64 2 78 8 80 20 C94 20 98 36 90 46 C92 60 80 66 68 62 C60 68 40 68 32 62 C20 66 8 60 10 46 C2 36 6 20 20 20 C22 8 36 2 50 6 Z" fill="#76c093"/>
   <path d="M32 18 C38 12 46 12 50 16" stroke="#b9e6c8" stroke-width="3"/>
   <path d="M18 34 C22 28 28 28 32 32" stroke="#b9e6c8" stroke-width="3"/>
-  <path d="M60 34 C66 30 72 32 76 36" stroke="#4b9570" stroke-width="3"/>
-  <path d="M34 42 C38 38 44 38 46 42" stroke="#4b9570" stroke-width="3"/>
+  <path d="M60 34 C66 30 72 32 76 36" stroke="#52a07a" stroke-width="3"/>
+  <path d="M62 50 C68 46 74 48 78 52" stroke="#52a07a" stroke-width="3"/>
+  <path d="M34 42 C38 38 44 38 46 42" stroke="#52a07a" stroke-width="3"/>
 </svg>

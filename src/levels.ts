@@ -32,7 +32,7 @@ export const LEVELS: readonly LevelDef[] = [
   { name: 'Seedling', svg: seedling, color: '#cdeccb', scale: 0.46 },
   { name: 'Bush', svg: bush, color: '#c8e6e0', scale: 0.54 },
   { name: 'Flower', svg: flower, color: '#f9d6e2', scale: 0.62 },
-  { name: 'Young Tree', svg: youngTree, color: '#f6efc6', scale: 0.7 },
+  { name: 'Young Tree', svg: youngTree, color: '#f6efc6', scale: 0.72 },
   { name: 'Tree', svg: tree, color: '#d8eab6', scale: 0.8 },
   { name: 'Old Tree', svg: oldTree, color: '#d6dff3', scale: 0.88 },
   { name: 'Ancient Tree', svg: ancientTree, color: '#b9dfb0', scale: 0.95 },
