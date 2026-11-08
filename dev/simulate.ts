@@ -49,7 +49,7 @@ const results = Array.from({ length: GAMES }, (_, i) => play(1000 + i));
 console.log(`Simulation: ${GAMES} games, strategy down > left > right > up, winning level ${MAX_LEVEL}`);
 console.log(`Reached level ${MAX_LEVEL} (win): ${results.filter((r) => r.won).length} of ${GAMES}`);
 console.log(`Moves until the end (win or loss): mean ${fmt(mean(results.map((r) => r.moves)))}, median ${fmt(median(results.map((r) => r.moves)))}`);
-for (const level of [7, 8, MAX_LEVEL].filter((l, i, a) => l <= MAX_LEVEL && a.indexOf(l) === i)) {
+for (const level of [7, 8, 9, MAX_LEVEL - 1, MAX_LEVEL].filter((l, i, a) => l <= MAX_LEVEL && a.indexOf(l) === i)) {
   const m = results.map((r) => r.reached[level]).filter((v): v is number => v !== undefined);
   console.log(`Moves until level ${level}: reached in ${m.length} games, mean ${fmt(mean(m))}, median ${fmt(median(m))}`);
 }
