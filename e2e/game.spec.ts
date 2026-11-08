@@ -5,9 +5,9 @@ async function seedNearlyWon(page: Page, extra: Record<string, unknown> = {}) {
   await page.addInitScript((patch) => {
     if (sessionStorage.getItem('seeded')) return;
     sessionStorage.setItem('seeded', '1');
-    const state = { board: [8, 8, ...new Array(14).fill(0)], score: 0, status: 'playing', moves: 3,
+    const state = { board: [10, 10, ...new Array(14).fill(0)], score: 0, status: 'playing', moves: 3,
       rng: 12345, seed: 1, playMs: 0, prev: null, ...patch };
-    localStorage.setItem('merge-garden:v1', JSON.stringify({ version: 2, state, best: 0 }));
+    localStorage.setItem('merge-garden:v1', JSON.stringify({ version: 3, state, best: 0 }));
   }, extra);
 }
 
@@ -47,8 +47,8 @@ test('win overlay sits on top and its New Game button is clickable', async ({ pa
   const overlay = page.locator('.overlay');
   await expect(overlay).toBeVisible();
   await expect(overlay).toContainText('You win!');
-  await expect(overlay).toContainText('Score: 512');
-  await expect(overlay).toContainText('Best: 512');
+  await expect(overlay).toContainText('Score: 2048');
+  await expect(overlay).toContainText('Best: 2048');
   await expect(overlay.getByRole('button')).toHaveCount(1);
   await expect(page.getByText('Keep playing')).toHaveCount(0);
   // The overlay must be the topmost element at the centre of the board.
@@ -129,7 +129,7 @@ test('How to play opens from the header, shows all levels and closes with Escape
   await page.locator('.header').getByRole('button', { name: 'How to play' }).click();
   await expect(help).toBeVisible();
   await expect(help.getByTestId('help-level').last()).toContainText('Ancient Tree');
-  expect(await help.getByTestId('help-level').count()).toBeGreaterThanOrEqual(9);
+  await expect(help.getByTestId('help-level').first()).toContainText('Seed'); // the row comes from the level list
   // Game input is ignored while open.
   const tilesBefore = await page.locator('.tile').evaluateAll((els) => els.map((e) => (e as HTMLElement).style.cssText).join());
   await page.keyboard.press('ArrowLeft');

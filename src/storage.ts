@@ -3,9 +3,9 @@ import { MAX_LEVEL, SIZE, type GameState, type Snapshot } from './game/types';
 const KEY = 'merge-garden:v1';
 /**
  * Version of the saved game format. Saves with another (or no) version are discarded on load,
- * only the best score is kept. 2 = Paket 5 (no watering can, 9 plant levels).
+ * only the best score is kept. 2 = Paket 5 (no watering can, 9 plant levels), 3 = Paket 9 (11 plant levels).
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export interface KV {
   getItem(key: string): string | null;
