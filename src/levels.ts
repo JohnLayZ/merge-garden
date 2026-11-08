@@ -1,12 +1,14 @@
-import seed from './assets/plants/level1-seed.svg?raw';
-import sprout from './assets/plants/level2-sprout.svg?raw';
-import seedling from './assets/plants/level3-seedling.svg?raw';
-import bush from './assets/plants/level4-bush.svg?raw';
-import flower from './assets/plants/level5-flower.svg?raw';
-import youngTree from './assets/plants/level6-young-tree.svg?raw';
-import tree from './assets/plants/level7-tree.svg?raw';
-import oldTree from './assets/plants/level8-old-tree.svg?raw';
-import ancientTree from './assets/plants/level9-ancient-tree.svg?raw';
+import seed from './assets/plants/01-seed.svg?raw';
+import plantedSeed from './assets/plants/02-planted-seed.svg?raw';
+import sprout from './assets/plants/03-sprout.svg?raw';
+import seedling from './assets/plants/04-seedling.svg?raw';
+import sapling from './assets/plants/05-sapling.svg?raw';
+import youngTree from './assets/plants/06-young-tree.svg?raw';
+import tree from './assets/plants/07-tree.svg?raw';
+import blossomTree from './assets/plants/08-blossom-tree.svg?raw';
+import greatTree from './assets/plants/09-great-tree.svg?raw';
+import autumnTree from './assets/plants/10-autumn-tree.svg?raw';
+import ancientTree from './assets/plants/11-ancient-tree.svg?raw';
 
 export interface LevelDef {
   name: string;
@@ -28,14 +30,16 @@ export interface LevelDef {
  */
 export const LEVELS: readonly LevelDef[] = [
   { name: 'Seed', svg: seed, color: '#f1e4d3', scale: 0.3 },
-  { name: 'Sprout', svg: sprout, color: '#e3f3c9', scale: 0.38 },
-  { name: 'Seedling', svg: seedling, color: '#cdeccb', scale: 0.46 },
-  { name: 'Bush', svg: bush, color: '#c8e6e0', scale: 0.54 },
-  { name: 'Flower', svg: flower, color: '#f9d6e2', scale: 0.62 },
-  { name: 'Young Tree', svg: youngTree, color: '#f6efc6', scale: 0.72 },
-  { name: 'Tree', svg: tree, color: '#d8eab6', scale: 0.8 },
-  { name: 'Old Tree', svg: oldTree, color: '#d6dff3', scale: 0.88 },
-  { name: 'Ancient Tree', svg: ancientTree, color: '#b9dfb0', scale: 0.95 },
+  { name: 'Planted Seed', svg: plantedSeed, color: '#ead3bd', scale: 0.37 },
+  { name: 'Sprout', svg: sprout, color: '#e3f3c9', scale: 0.39 },
+  { name: 'Seedling', svg: seedling, color: '#cdeccb', scale: 0.51 },
+  { name: 'Sapling', svg: sapling, color: '#c8e6e0', scale: 0.58 },
+  { name: 'Young Tree', svg: youngTree, color: '#f6efc6', scale: 0.65 },
+  { name: 'Tree', svg: tree, color: '#d8eab6', scale: 0.72 },
+  { name: 'Blossom Tree', svg: blossomTree, color: '#f9d6e2', scale: 0.79 },
+  { name: 'Great Tree', svg: greatTree, color: '#d6dff3', scale: 0.85 },
+  { name: 'Autumn Tree', svg: autumnTree, color: '#fbe0b8', scale: 0.9 },
+  { name: 'Ancient Tree', svg: ancientTree, color: '#f3dd8e', scale: 0.95 },
 ];
 
 /** Number of levels = the winning level (the last one in the list). */
