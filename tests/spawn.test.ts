@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { nextRandom } from '../src/game/rng';
-import { spawnSeeds } from '../src/game/spawn';
+import { LEVELS } from '../src/levels';
+import { SPAWN_PLANTED_SEED_CHANCE, SPAWN_PLANTED_SEED_LEVEL, SPAWN_SEED_LEVEL, spawnPlant } from '../src/game/spawn';
 
 describe('rng', () => {
   it('is deterministic and in [0,1)', () => {
@@ -16,33 +17,52 @@ describe('rng', () => {
   it('differs between seeds', () => expect(nextRandom(1).value).not.toBe(nextRandom(2).value));
 });
 
-describe('spawnSeeds', () => {
-  it('adds 1 or 2 seeds on empty cells only, never touching others', () => {
+describe('spawnPlant', () => {
+  it('adds exactly one plant (Seed or Planted Seed) on an empty cell, never touching others', () => {
     let rng = 7;
-    const seen = new Set<number>();
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 300; i++) {
       const board = new Array(16).fill(0);
       board[0] = 3; board[5] = 2;
-      const r = spawnSeeds(board, rng);
+      const r = spawnPlant(board, rng);
       rng = r.rng;
-      const added = r.board.filter((v) => v === 1).length;
-      seen.add(added);
-      expect(added).toBeGreaterThanOrEqual(1);
-      expect(added).toBeLessThanOrEqual(2);
+      const added = r.board.map((v, k) => (v !== board[k] ? k : -1)).filter((k) => k >= 0);
+      expect(added).toHaveLength(1);
+      expect([SPAWN_SEED_LEVEL, SPAWN_PLANTED_SEED_LEVEL]).toContain(r.board[added[0]]);
+      expect(board[added[0]]).toBe(0);
       expect(r.board[0]).toBe(3);
       expect(r.board[5]).toBe(2);
     }
-    expect(seen).toEqual(new Set([1, 2]));
+  });
+  it('uses the first two entries of the level list and a named chance of 10 %', () => {
+    expect(LEVELS[SPAWN_SEED_LEVEL - 1].name).toBe('Seed');
+    expect(LEVELS[SPAWN_PLANTED_SEED_LEVEL - 1].name).toBe('Planted Seed');
+    expect(SPAWN_PLANTED_SEED_CHANCE).toBe(0.1);
+  });
+  it('is about 90 % Seed and 10 % Planted Seed over many spawns (fixed rng, deterministic)', () => {
+    let rng = 12345;
+    let planted = 0;
+    const N = 10_000;
+    for (let i = 0; i < N; i++) {
+      const r = spawnPlant(new Array(16).fill(0), rng);
+      rng = r.rng;
+      if (r.board.includes(SPAWN_PLANTED_SEED_LEVEL)) planted++;
+    }
+    expect(planted / N).toBeGreaterThan(0.09);
+    expect(planted / N).toBeLessThan(0.11);
   });
   it('is deterministic for the same rng state', () => {
     const board = new Array(16).fill(0);
-    expect(spawnSeeds(board, 5)).toEqual(spawnSeeds(board, 5));
+    expect(spawnPlant(board, 5)).toEqual(spawnPlant(board, 5));
   });
-  it('handles a single empty cell and a full board', () => {
-    const board = new Array(16).fill(2);
-    board[9] = 0;
-    expect(spawnSeeds(board, 1).board[9]).toBe(1);
+  it('fills the only empty cell and leaves a full board unchanged', () => {
+    for (let rng = 1; rng <= 50; rng++) {
+      const board = new Array(16).fill(2);
+      board[9] = 0;
+      const r = spawnPlant(board, rng);
+      expect([SPAWN_SEED_LEVEL, SPAWN_PLANTED_SEED_LEVEL]).toContain(r.board[9]);
+      expect(r.board.filter((v, k) => v !== board[k])).toHaveLength(1);
+    }
     const full = new Array(16).fill(2);
-    expect(spawnSeeds(full, 1).board).toEqual(full);
+    expect(spawnPlant(full, 1).board).toEqual(full);
   });
 });

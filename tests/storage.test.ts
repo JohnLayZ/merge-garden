@@ -93,6 +93,15 @@ describe('storage version', () => {
     expect(SAVE_VERSION).toBeGreaterThan(2);
     expect(loadGame(kv)).toEqual({ state: null, best: 1500 });
   });
+  it('loads a save written before the spawn rule change (same version, same fields) without errors', () => {
+    const kv = fake();
+    const s = { ...newGame(9), board: [5, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3], score: 77, moves: 12, rng: 123456789, playMs: 4000, prev: null };
+    kv.setItem('merge-garden:v1', JSON.stringify({ version: SAVE_VERSION, state: s, best: 200 }));
+    const loaded = loadGame(kv);
+    expect(loaded?.state).toEqual(s);
+    expect(loaded?.best).toBe(200);
+    expect(applyMove(loaded!.state!, 'left').moves).toBe(13);
+  });
   it('writes the current version and loads such a save', () => {
     const kv = fake();
     saveGame(kv, newGame(2), 5);
