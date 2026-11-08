@@ -12,7 +12,7 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 1. Spielfeld 4x4. Jedes Feld ist leer oder enthält eine Pflanze der Stufe 1–11.
 2. Stufen: 1 Seed, 2 Planted Seed, 3 Sprout, 4 Seedling, 5 Sapling, 6 Young Tree, 7 Tree, 8 Blossom Tree, 9 Great Tree, 10 Autumn Tree, 11 Ancient Tree. Ab Stufe 5 sind alle Stufen Bäume; die Stufen 8 bis 11 folgen den Jahreszeiten (Blossom Tree = Frühling, Great Tree = Sommer, Autumn Tree = Herbst, Ancient Tree steht über den Jahreszeiten). Stufen, Namen, SVGs, Feldfarben und Größen stehen an einer einzigen Stelle als Liste (`LEVELS` in `src/levels.ts`); die Stufenzahl (`MAX_LEVEL`) und damit die Siegstufe ergeben sich aus der Länge dieser Liste, nirgends sonst ist eine Stufenzahl hartkodiert.
 3. Ein Zug = Wischen/Pfeiltaste in eine Richtung. Alle Pflanzen gleiten bis zum Rand. Zwei gleiche Pflanzen, die aufeinandertreffen, verschmelzen zur nächsten Stufe (pro Zug höchstens eine Verschmelzung pro Pflanze).
-4. Hat sich nach einem Zug etwas verändert, erscheinen 1–2 neue Samen (Stufe 1) auf zufälligen leeren Feldern. Bewegt sich nichts, ist der Zug ungültig und zählt nicht.
+4. Hat sich nach einem Zug etwas verändert, erscheint genau eine neue Pflanze auf einem zufällig gewählten leeren Feld (wie im Original 2048): mit 90 % ein Seed (Stufe 1), mit 10 % ein Planted Seed (Stufe 2; Konstante `SPAWN_PLANTED_SEED_CHANCE` in `src/game/spawn.ts`, Zufall nur über den seedbaren Generator). Es gibt keinen Doppelspawn. Spawns geben keine Punkte. Bewegt sich nichts, ist der Zug ungültig und zählt nicht. Ein neues Spiel startet mit zwei Pflanzen nach derselben Regel.
 5. Punkte: Verschmelzung zur Stufe n gibt 2^n Punkte.
 6. Gewonnen: Sobald die letzte Stufe der Liste (Stufe 11, Ancient Tree) entsteht, ist das Spiel gewonnen und beendet. Danach sind keine Züge oder Undo mehr möglich; es gibt kein Weiterspielen. Der Highscore wird dennoch aktualisiert, und nach Reload bleibt der Gewonnen-Zustand samt Overlay erhalten.
 7. Verloren: Feld voll und keine Verschmelzung mehr möglich.
@@ -39,7 +39,9 @@ Kleines Browser-Puzzle im Stil eines Schiebe-und-Verschmelz-Spiels, aber mit Pfl
 - Zeile `[1,1,0,0]` nach links ergibt `[2,0,0,0]`
 - Zeile `[1,1,1,1]` nach links ergibt `[2,2,0,0]`
 - Zeile `[2,1,1,0]` nach links ergibt `[2,2,0,0]`, die neue 2 verschmilzt im selben Zug nicht erneut
-- Ungültiger Zug verändert Zustand, Punkte und Zugzähler nicht
+- Ungültiger Zug verändert Zustand, Punkte und Zugzähler nicht und erzeugt keine Pflanze
+- Nach jedem gültigen Zug liegt genau eine Pflanze mehr auf dem Feld als nach dem reinen Schieben und Verschmelzen; über viele Züge sind ca. 90 % der neuen Pflanzen Seeds und ca. 10 % Planted Seeds
+- Undo nach einem Zug mit Planted-Seed-Spawn stellt den vorherigen Zustand samt Zufallszustand exakt wieder her; derselbe Zug danach führt zum selben Ergebnis
 - Gleicher Seed und gleiche Zugfolge ergeben identischen Spielverlauf
 - Ein alter Spielstand (andere Version) wird beim Laden verworfen, der Highscore bleibt
 - Ist das Feld voll und keine Verschmelzung mehr möglich, ist das Spiel verloren

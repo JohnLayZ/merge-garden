@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyMove, computeStatus, isBlocked, newGame, undo } from '../src/game/state';
+import { moveBoard } from '../src/game/board';
 import { MAX_LEVEL, type Direction, type GameState } from '../src/game/types';
 
 const PRE = MAX_LEVEL - 1; // the level just below the winning one
@@ -10,10 +11,10 @@ const withBoard = (rows: number[][], extra: Partial<GameState> = {}): GameState 
 const Z = [0, 0, 0, 0];
 
 describe('newGame', () => {
-  it('starts with 2 seeds, score 0, playing', () => {
+  it('starts with 2 plants (Seed or Planted Seed), score 0, playing', () => {
     const g = newGame(123);
-    expect(g.board.filter((v) => v === 1).length).toBeGreaterThanOrEqual(2);
-    expect(g.board.filter((v) => v === 1).length).toBeLessThanOrEqual(3);
+    expect(g.board.filter((v) => v > 0)).toHaveLength(2);
+    expect(g.board.every((v) => v === 0 || v === 1 || v === 2)).toBe(true);
     expect(g.score).toBe(0);
     expect(g.status).toBe('playing');
   });
@@ -82,5 +83,48 @@ describe('status', () => {
     const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];
     const s = withBoard(rows, { status: 'lost' });
     expect(applyMove(s, 'left')).toBe(s);
+  });
+});
+
+describe('one new plant per valid move', () => {
+  const count = (b: number[]) => b.filter((v) => v > 0).length;
+  const DIRS: Direction[] = ['left', 'down', 'right', 'up'];
+
+  it('after every valid move there is exactly one more tile than after merging (so one less per merge)', () => {
+    let s = newGame(2024);
+    for (let i = 0; i < 300 && s.status === 'playing'; i++) {
+      const d = DIRS[i % 4];
+      const moved = moveBoard(s.board, d);
+      const n = applyMove(s, d);
+      if (n === s) continue;
+      expect(count(n.board)).toBe(count(moved.board) + 1);
+      expect(count(moved.board)).toBeLessThanOrEqual(count(s.board));
+      s = n;
+    }
+  });
+  it('an invalid move creates no tile and returns the same state', () => {
+    const s = withBoard([[1, 2, 0, 0], Z, Z, Z]);
+    const n = applyMove(s, 'left');
+    expect(n).toBe(s);
+    expect(count(n.board)).toBe(2);
+  });
+  it('a spawn gives no points', () => {
+    const s = withBoard([[1, 2, 0, 0], Z, Z, Z]);
+    expect(applyMove(s, 'right').score).toBe(0);
+  });
+  it('undo after a move that spawned a Planted Seed restores the exact previous state and replays identically', () => {
+    let found = 0;
+    for (let seed = 1; seed < 400 && found < 3; seed++) {
+      const before = withBoard([[3, 0, 0, 0], [0, 4, 0, 0], Z, Z], { rng: seed });
+      const after = applyMove(before, 'right');
+      const moved = moveBoard(before.board, 'right').board;
+      const spawnedCell = after.board.findIndex((v, i) => v !== moved[i]);
+      if (after.board[spawnedCell] !== 2) continue;
+      found++;
+      const back = undo(after);
+      expect(back).toEqual({ ...before, prev: null });
+      expect(applyMove(back, 'right')).toEqual(after);
+    }
+    expect(found).toBe(3);
   });
 });

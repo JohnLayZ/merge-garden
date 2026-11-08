@@ -48,6 +48,7 @@ const fmt = (n: number) => (Number.isNaN(n) ? '-' : n.toFixed(1));
 const results = Array.from({ length: GAMES }, (_, i) => play(1000 + i));
 console.log(`Simulation: ${GAMES} games, strategy down > left > right > up, winning level ${MAX_LEVEL}`);
 console.log(`Reached level ${MAX_LEVEL} (win): ${results.filter((r) => r.won).length} of ${GAMES}`);
+console.log(`Highest level reached: ${Math.max(...results.map((r) => Math.max(0, ...Object.keys(r.reached).map(Number))))}`);
 console.log(`Moves until the end (win or loss): mean ${fmt(mean(results.map((r) => r.moves)))}, median ${fmt(median(results.map((r) => r.moves)))}`);
 for (const level of [7, 8, 9, MAX_LEVEL - 1, MAX_LEVEL].filter((l, i, a) => l <= MAX_LEVEL && a.indexOf(l) === i)) {
   const m = results.map((r) => r.reached[level]).filter((v): v is number => v !== undefined);

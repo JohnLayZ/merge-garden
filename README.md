@@ -31,7 +31,7 @@ In the game, the **?** button in the header opens a short guide (all plant stage
 - The board is 4×4. Swipe, or use the arrow keys / WASD, to slide all plants in one direction.
 - Two equal plants that meet merge into the next stage (each plant merges at most once per move).
   Eleven stages: Seed → Planted Seed → Sprout → Seedling → Sapling → Young Tree → Tree → Blossom Tree → Great Tree → Autumn Tree → Ancient Tree (own SVG artwork in `src/assets/plants/`, growing in size with every stage; from stage 5 on they are all trees, and stages 8–11 follow the seasons: spring, summer, autumn, and the Ancient Tree above them). All level data lives in one list, `LEVELS` in `src/levels.ts`; the last entry is the winning stage.
-- If a move changed something, 1–2 new seeds appear (fading in softly). A move that changes nothing doesn't count.
+- If a move changed something, exactly one new plant appears (a Seed 90 % of the time, a Planted Seed 10 %, fading in softly). A move that changes nothing doesn't count.
 - Score: merging into stage *n* gives 2ⁿ points.
 - You win when the first Ancient Tree (stage 11, the last one) appears and the game ends — no more moves or undo). You lose when the board is full and nothing can merge any more.
 - The header shows the play time (m:ss / h:mm:ss). It starts with your first valid move, only counts while the page is visible, stops at win/game over (the overlay shows the final time) and continues after a reload.

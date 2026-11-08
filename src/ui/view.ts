@@ -121,7 +121,7 @@ export function createView(root: HTMLElement): View {
   for (const line of [
     'Swipe, or use the arrow keys / WASD, to slide all plants.',
     'Two equal plants merge into the next stage.',
-    'After every valid move, new seeds appear.',
+    'After every valid move, a new plant appears: usually a Seed, sometimes a Planted Seed.',
     `Goal: grow an ${winName} to win.`,
     'Game over when nothing can move or merge. Undo takes back exactly one move, but not after a win or game over.',
   ]) helpList.append(el('li', '', line));
