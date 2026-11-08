@@ -33,7 +33,7 @@ ALL DONE
 ## Änderungsrunde 6 / Paket 5 (fertig)
 - Gießkanne vollständig entfernt (Logik, Zustand, UI, Sound, `drop.svg`, Tests, Doku). Verloren = Feld voll und keine Verschmelzung mehr möglich. Undo bleibt (ein Schritt, nach Sieg/Game Over gesperrt).
 - Spielstand trägt eine Version (`SAVE_VERSION = 2`): alter Stand wird verworfen (neues Spiel), Highscore bleibt; Test dafür.
-- 9 Stufen (Seed, Sprout, Seedling, Bush, Flower, Young Tree, Tree, Old Tree, Ancient Tree) in einer zentralen Liste `src/levels.ts` (Namen, SVGs, Feldfarben, Größen); Sieg bei der letzten Stufe der Liste. Neue SVGs Young Tree und Old Tree.
+- (seit Paket 9: 11 Stufen) Stufenliste in einer zentralen Liste `src/levels.ts` (Namen, SVGs, Feldfarben, Größen); Sieg bei der letzten Stufe der Liste. Neue SVGs Young Tree und Old Tree.
 - Optik geprüft (520/360 px, laufendes Spiel) und nachgebessert (siehe DECISIONS.md).
 - `npm run simulate` (nur Dev): 500 Partien mit einfacher Strategie. Sieg in 12 von 500, Ende im Mittel nach 220 Zügen (Median 204); Stufe 7 nach 99/98, Stufe 8 nach 176/176 (Mittel/Median).
 - Sounds für 9 Stufen aus der Stufenliste abgeleitet (Gain 1,0 → 0,6, keine Obertöne über C6), Test.
@@ -54,6 +54,13 @@ ALL DONE
 ## Änderungsrunde 9 / Paket 8 (fertig)
 - Nur Entwürfe, Spiel unverändert: Planted Seed ohne Gesichtsmarkierungen, Sprout kleiner (Faktor 0,39), Young Tree mit Wolkenkrone, Old Tree → Autumn Tree (Jahreszeiten-Logik, Herbstlaub, fallende Blätter). Neue Screenshots `docs/vorschau/plants-v2b-*.png`. Details in DECISIONS.md.
 - Entwürfe (11 Stufen) warten weiter auf Freigabe, bevor sie ins Spiel eingebaut werden.
+
+## Änderungsrunde 10 / Paket 9 (fertig)
+- Das Spiel hat 11 Stufen (Seed, Planted Seed, Sprout, Seedling, Sapling, Young Tree, Tree, Blossom Tree, Great Tree, Autumn Tree, Ancient Tree); Bush und Flower entfallen; Sieg bei der letzten Stufe der Liste (Ancient Tree, 2048 Punkte im letzten Zug). Neue SVGs in `src/assets/plants/` (plants-v2 entfernt), `PLANT_SCALE` mit 11 Werten, neue Kachelfarben (Ancient Tree Gold).
+- Sounds: Tonleiter oben bei E5 verankert, Gain gleichmäßig 1,0 → 0,6. `SAVE_VERSION` 3 (alte Stände verworfen, Highscore bleibt). Anleitung zeigt 11 Stufen bei 360 px ohne Überlauf. Kopfbereich bei 360 px für lange Werte angepasst.
+- Eine Vorschau `dev/plants.html`; Screenshots `docs/vorschau/spiel-11-stufen-360.png` / `-520.png`.
+- Simulation: Siegquote 0 von 500 (vorher 12), Ende im Mittel nach 223 Zügen (Median 204).
+- Stand: lint, 99 Unit-Tests, Build und 7 e2e-Tests grün.
 
 ## Offen
 - Nichts im Backlog.

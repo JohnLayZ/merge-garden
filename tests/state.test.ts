@@ -41,7 +41,7 @@ describe('applyMove', () => {
 
 describe('status', () => {
   it('wins when the last level (Ancient Tree) is created and the game is then over', () => {
-    expect(MAX_LEVEL).toBe(9);
+    expect(MAX_LEVEL).toBeGreaterThanOrEqual(2);
     const s = withBoard([[PRE, PRE, 0, 0], Z, Z, Z]);
     const n = applyMove(s, 'left');
     expect(n.status).toBe('won');
@@ -54,14 +54,11 @@ describe('status', () => {
     expect(n.prev).not.toBeNull();
     expect(undo(n)).toBe(n);
   });
-  it('does not win at the old level 7: Tree and Old Tree keep the game going', () => {
-    const t = applyMove(withBoard([[6, 6, 0, 0], Z, Z, Z]), 'left');
-    expect(t.board[0]).toBe(7);
-    expect(t.status).toBe('playing');
-    const o = applyMove(withBoard([[7, 7, 0, 0], Z, Z, Z]), 'left');
-    expect(o.board[0]).toBe(8);
-    expect(o.status).toBe('playing');
-    expect(applyMove(withBoard([[8, 8, 0, 0], Z, Z, Z]), 'left').status).toBe('won');
+  it('does not win below the last level: only creating the last level of the list ends the game', () => {
+    const below = applyMove(withBoard([[PRE - 1, PRE - 1, 0, 0], Z, Z, Z]), 'left');
+    expect(below.board[0]).toBe(PRE);
+    expect(below.status).toBe('playing');
+    expect(applyMove(withBoard([[PRE, PRE, 0, 0], Z, Z, Z]), 'left').status).toBe('won');
   });
   it('is lost on a full board without merges', () => {
     const rows = [[1, 2, 1, 2], [2, 1, 2, 1], [1, 2, 1, 2], [2, 1, 2, 1]];

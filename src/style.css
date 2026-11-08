@@ -77,7 +77,11 @@ body {
 @media (max-width: 420px) {
   #app { padding: 10px; gap: 10px; }
   .title { font-size: 1.05rem; }
-  .box { min-width: 0; padding: 4px 8px; }
+  .box { min-width: 0; padding: 4px 6px; }
+  .box-value { font-size: 1rem; }
+  /* long scores / times: the title may move to its own row instead of being squeezed away */
+  .header { flex-wrap: wrap; row-gap: 6px; }
+  .title { flex: 1 1 72px; min-width: 72px; }
   .header { gap: 6px; }
   .btn { padding: 10px 10px; font-size: 0.9rem; flex: 1; }
   .icon-btn { flex: none; width: 36px; min-height: 40px; padding: 6px; }

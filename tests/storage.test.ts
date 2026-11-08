@@ -86,6 +86,13 @@ describe('storage version', () => {
     kv.setItem('merge-garden:v1', JSON.stringify({ version: SAVE_VERSION - 1, state: old, best: 300 }));
     expect(loadGame(kv)).toEqual({ state: null, best: 300 });
   });
+  it('discards a save of the 9-level game (version 2) but keeps its best score', () => {
+    const kv = fake();
+    const nine = { ...newGame(7), board: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0], score: 1200 };
+    kv.setItem('merge-garden:v1', JSON.stringify({ version: 2, state: nine, best: 1500 }));
+    expect(SAVE_VERSION).toBeGreaterThan(2);
+    expect(loadGame(kv)).toEqual({ state: null, best: 1500 });
+  });
   it('writes the current version and loads such a save', () => {
     const kv = fake();
     saveGame(kv, newGame(2), 5);
