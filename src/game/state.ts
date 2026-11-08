@@ -1,11 +1,11 @@
 import { moveBoard } from './board';
-import { spawnSeeds } from './spawn';
+import { spawnPlant } from './spawn';
 import { MAX_LEVEL, SIZE, type Board, type Direction, type GameState, type Snapshot, type Status } from './types';
 
 export function newGame(seed: number): GameState {
   const empty: Board = new Array(SIZE * SIZE).fill(0);
-  const first = spawnSeeds(empty, seed >>> 0);
-  const second = spawnSeeds(first.board, first.rng);
+  const first = spawnPlant(empty, seed >>> 0);
+  const second = spawnPlant(first.board, first.rng);
   return {
     board: second.board,
     score: 0,
@@ -39,7 +39,7 @@ export function applyMove(state: GameState, dir: Direction): GameState {
   if (state.status !== 'playing') return state;
   const res = moveBoard(state.board, dir);
   if (!res.moved) return state;
-  const spawned = spawnSeeds(res.board, state.rng);
+  const spawned = spawnPlant(res.board, state.rng);
   const next: GameState = {
     ...state,
     board: spawned.board,
