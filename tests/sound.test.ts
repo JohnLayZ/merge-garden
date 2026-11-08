@@ -119,11 +119,22 @@ describe('sound', () => {
       expect(GAINS.mergeByLevel[2]).toBe(1);
       expect(GAINS.mergeByLevel[MAX_LEVEL]).toBeCloseTo(0.6, 9);
     });
-    it('is not louder or shriller than before for any level, and never above the limiter ceiling', () => {
-      // old curve (Paket 4) for levels 2..7; the new curve is at most as loud
-      const old: Record<number, number> = { 2: 1, 3: 0.97, 4: 0.9, 5: 0.85, 6: 0.8, 7: 0.74 };
-      for (const [lv, g] of Object.entries(old)) expect(GAINS.mergeByLevel[Number(lv)]).toBeLessThanOrEqual(g);
-      expect(MERGE_NOTES[7]).toBeCloseTo(523.25, 1);
+    it('falls evenly: equal gain steps from 1 down to 0.6 over all merge levels', () => {
+      const step = (1 - 0.6) / (MAX_LEVEL - 2);
+      for (let lv = 3; lv <= MAX_LEVEL; lv++) {
+        expect(GAINS.mergeByLevel[lv - 1] - GAINS.mergeByLevel[lv]).toBeCloseTo(step, 9);
+      }
+    });
+    it('is never shriller than E5 (the old top note) for any level, and never above the limiter ceiling', () => {
+      const E5 = 659.26;
+      expect(MERGE_NOTES[MAX_LEVEL]).toBeCloseTo(E5, 0);
+      for (let lv = 2; lv <= MAX_LEVEL; lv++) expect(MERGE_NOTES[lv]).toBeLessThanOrEqual(E5 + 0.5);
+      // pentatonic: every note is one of C D E G A in some octave
+      const pent = new Set([0, 2, 4, 7, 9]);
+      for (let lv = 2; lv <= MAX_LEVEL; lv++) {
+        const semis = Math.round(12 * Math.log2(MERGE_NOTES[lv] / 261.63));
+        expect(pent.has(((semis % 12) + 12) % 12)).toBe(true);
+      }
       for (let lv = 2; lv <= MAX_LEVEL; lv++) {
         const f = fakeCtx();
         const s = createSound({ kv: fakeKv(), create: () => f.ctx });

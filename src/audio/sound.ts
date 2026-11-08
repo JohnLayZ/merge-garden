@@ -14,14 +14,19 @@ export const MUTE_KEY = 'merge-garden:muted';
 const MERGE_LEVELS = Array.from({ length: MAX_LEVEL - 1 }, (_, i) => i + 2);
 
 /**
- * C major pentatonic (C D E G A, repeating each octave) starting at C4, one note per resulting level
- * of a merge, derived from the central level list: level 2 = C4 ... level 7 = C5 (as before),
- * level 8 = D5, level 9 = E5. Higher level = higher note.
+ * C major pentatonic (C D E G A, repeating each octave), one note per resulting level of a merge,
+ * derived from the central level list. The scale is anchored at the TOP: the highest level always
+ * plays E5 (659 Hz, the highest merge note since Paket 3), so adding levels extends the scale
+ * downwards and never makes the top sound shriller. With 11 levels: level 2 = G3 ... level 7 = G4,
+ * level 8 = A4, level 9 = C5, level 10 = D5, level 11 = E5. Higher level = higher note.
  */
 const PENTATONIC = [0, 2, 4, 7, 9];
+/** Pentatonic step index of E5 (C4 = 0, D4 = 1, E4 = 2, G4 = 3, A4 = 4, C5 = 5, D5 = 6, E5 = 7). */
+const TOP_STEP = 7;
 export const MERGE_NOTES: Record<number, number> = Object.fromEntries(
   MERGE_LEVELS.map((lv, i) => {
-    const semitones = PENTATONIC[i % 5] + 12 * Math.floor(i / 5);
+    const k = TOP_STEP - (MERGE_LEVELS.length - 1 - i);
+    const semitones = 12 * Math.floor(k / 5) + PENTATONIC[((k % 5) + 5) % 5];
     return [lv, 261.63 * 2 ** (semitones / 12)];
   }),
 );
@@ -29,7 +34,7 @@ export const MERGE_NOTES: Record<number, number> = Object.fromEntries(
 /** Overtones above this frequency (the highest merge overtone before Paket 5, C6) are left out so higher levels never get shriller. */
 export const MAX_PARTIAL_HZ = 1046.5;
 
-/** Gain of a merge note: falls linearly from 1 (level 2) to MERGE_GAIN_MIN (top level); a bit lower than the old curve at 3..7, never louder. */
+/** Gain of a merge note: falls linearly from 1 (first merge level, 2) to MERGE_GAIN_MIN (top level), evenly for any number of levels. */
 export const MERGE_GAIN_MIN = 0.6;
 
 /**
