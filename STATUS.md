@@ -51,6 +51,10 @@ ALL DONE
 - Wartet auf Freigabe des Auftraggebers, bevor die Entwürfe (11 Stufen) ins Spiel eingebaut werden.
 - Stand: lint, 95 Unit-Tests, Build grün.
 
+## Änderungsrunde 9 / Paket 8 (fertig)
+- Nur Entwürfe, Spiel unverändert: Planted Seed ohne Gesichtsmarkierungen, Sprout kleiner (Faktor 0,39), Young Tree mit Wolkenkrone, Old Tree → Autumn Tree (Jahreszeiten-Logik, Herbstlaub, fallende Blätter). Neue Screenshots `docs/vorschau/plants-v2b-*.png`. Details in DECISIONS.md.
+- Entwürfe (11 Stufen) warten weiter auf Freigabe, bevor sie ins Spiel eingebaut werden.
+
 ## Offen
 - Nichts im Backlog.
 

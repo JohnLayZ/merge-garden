@@ -4,14 +4,14 @@ import '../src/style.css';
 const DRAFT = [
   { name: 'Seed', color: '#f1e4d3', scale: 0.3 },
   { name: 'Planted Seed', color: '#ead3bd', scale: 0.37 },
-  { name: 'Sprout', color: '#e3f3c9', scale: 0.44 },
+  { name: 'Sprout', color: '#e3f3c9', scale: 0.39 },
   { name: 'Seedling', color: '#cdeccb', scale: 0.51 },
   { name: 'Sapling', color: '#c8e6e0', scale: 0.58 },
   { name: 'Young Tree', color: '#f6efc6', scale: 0.65 },
   { name: 'Tree', color: '#d8eab6', scale: 0.72 },
   { name: 'Blossom Tree', color: '#f9d6e2', scale: 0.79 },
   { name: 'Great Tree', color: '#d6dff3', scale: 0.85 },
-  { name: 'Old Tree', color: '#fbe0b8', scale: 0.9 },
+  { name: 'Autumn Tree', color: '#fbe0b8', scale: 0.9 },
   { name: 'Ancient Tree', color: '#bfe3b4', scale: 0.95 },
 ] as const;
 
