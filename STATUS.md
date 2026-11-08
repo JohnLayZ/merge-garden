@@ -62,6 +62,12 @@ ALL DONE
 - Simulation: Siegquote 0 von 500 (vorher 12), Ende im Mittel nach 223 Zügen (Median 204).
 - Stand: lint, 99 Unit-Tests, Build und 7 e2e-Tests grün.
 
+## Änderungsrunde 11 / Paket 11 (fertig)
+- Spawn-Regel wie im Original 2048: nach jedem gültigen Zug genau eine neue Pflanze (90 % Seed, 10 % Planted Seed, Konstante `SPAWN_PLANTED_SEED_CHANCE`), Doppelspawn entfernt. Anleitung, README, SPEC und DECISIONS angepasst (alter Doppelspawn-Eintrag als überholt markiert). `SAVE_VERSION` bleibt 3 (alte Stände laden fehlerfrei, Test).
+- Neue Tests: eine Kachel mehr pro gültigem Zug, ungültiger Zug ohne Kachel, Verteilung ca. 90/10 bei festem Seed, nur leere Felder (auch bei einem leeren Feld), Undo nach Planted-Seed-Spawn mit identischem Wiederholen.
+- Simulation: 0 Siege in 500 Partien, höchste Stufe 9, im Mittel 216,5 Züge bis zum Ende (vorher 223).
+- Stand: lint, 106 Unit-Tests, Build und 7 e2e-Tests grün.
+
 ## Offen
 - Nichts im Backlog.
 
